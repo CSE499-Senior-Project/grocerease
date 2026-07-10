@@ -1,4 +1,4 @@
-# Senior-Project
+# GrocerEase Senior Project
 CSE499 Senior Project Repo
 
 Team Members:

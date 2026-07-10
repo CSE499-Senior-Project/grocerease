@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  /* Our Fresh Organic Colors */
+  --color-brand-primary: #16a34a;
+  --color-brand-light: #dcfce7;
+  --color-brand-dark: #15803d;
+  --color-accent: #f59e0b;
+  --color-surface: #ffffff;
+  --color-surface-background: #f8fafc;
+
+  /* Our Modern Tech Fonts (linking to layout.tsx variables) */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-roboto-mono), ui-monospace, SFMono-Regular, monospace;
+}
