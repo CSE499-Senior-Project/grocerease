@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* :root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+} */
+
+@theme {
+  /* Our Fresh Organic Colors */
+  --color-brand-primary: #16a34a;
+  --color-brand-light: #dcfce7;
+  --color-brand-dark: #15803d;
+  --color-accent: #f59e0b;
+  --color-surface: #ffffff;
+  --color-surface-background: #f8fafc;
+
+  /* Our Modern Tech Fonts (linking to layout.tsx variables) */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-roboto-mono), ui-monospace, SFMono-Regular, monospace;
+}
