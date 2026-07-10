@@ -6,7 +6,7 @@ export default function Home() {
           Welcome to <span className="text-brand-primary">GrocerEase</span>
         </h1>
         <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-          Fresh groceries delivered directly to your door. Your Next.js and Tailwind v4 setup is working perfectly!
+          Fresh groceries delivered directly to your door.
         </p>
         
         <div className="flex gap-4 justify-center">
