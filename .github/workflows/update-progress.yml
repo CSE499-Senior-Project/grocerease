@@ -1,11 +1,12 @@
 name: Update Project Progress
 
 on:
-  # Triggers instantly when cards/items on your Project Board are moved, created, or deleted
+  # Triggers when cards are moved on Classic Projects
   project_card:
     types: [moved, created, deleted]
-  project_item:
-    types: [moved, created, deleted]
+  # Triggers when items are edited/moved on the new Projects (v2)
+  project:
+    types: [edited, closed, reopened]
   # Allows you to manually trigger it from the Actions tab for quick testing
   workflow_dispatch:
 
