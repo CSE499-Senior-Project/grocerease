@@ -3,7 +3,7 @@ name: Update Project Progress
 on:
   push:
     branches:
-      - develop # Only triggers on pushes to develop
+      - development # Only triggers on pushes to develop
   schedule:
     - cron: '0 */12 * * *'
   workflow_dispatch:
