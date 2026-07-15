@@ -1,4 +1,10 @@
-export default function Home() {
+import { createClient } from '@/utils/supabase/server'
+import { cookies } from 'next/headers'
+
+export default async function Home() {
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="text-center">
