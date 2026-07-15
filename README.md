@@ -1,3 +1,7 @@
+
+
+![](https://geps.dev/progress/100)
+
 # GrocerEase Senior Project
 
 CSE499 Senior Project Repo
