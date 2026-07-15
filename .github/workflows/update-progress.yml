@@ -67,10 +67,7 @@ jobs:
           PERCENT=${{ steps.calc.outputs.percent }}
           BAR_IMG="![](https://geps.dev/progress/$PERCENT)"
           
-          # This Perl command looks explicitly for the START and END tags 
-          # and replaces ONLY what is between them. It is mathematically 
-          # incapable of appending to random lines.
-          perl -0777 -pi -e "s/(?<=).*?(?=)/\n\n$BAR_IMG\n\n/s" README.md
+          perl -0777 -pi -e "s|(?<=).*?(?=)|\n\n$BAR_IMG\n\n|s" README.md
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
