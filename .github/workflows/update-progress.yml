@@ -1,13 +1,14 @@
 name: Update Project Progress
 
 on:
-  # Triggers when cards are moved on Classic Projects
-  project_card:
-    types: [moved, created, deleted]
-  # Triggers when items are edited/moved on the new Projects (v2)
-  project:
-    types: [edited, closed, reopened]
-  # Allows you to manually trigger it from the Actions tab for quick testing
+  # Triggers every time you push code to this branch (perfect for testing right now!)
+  push:
+    branches:
+      - progressbar
+  # Triggers automatically every 12 hours
+  schedule:
+    - cron: '0 */12 * * *'
+  # Keeps the manual trigger available once merged to main
   workflow_dispatch:
 
 # GRANTS WRITE PERMISSION DIRECTLY TO THE GITHUB_TOKEN FOR THIS WORKFLOW
