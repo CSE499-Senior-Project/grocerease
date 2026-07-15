@@ -12,5 +12,4 @@ Murilo Luiz Hernandes
 **2 Nephi 2:25 "Adam fell that men might be; and men are, that they might have joy."**
 
 # Project Roadmap
-
 Current Progress:

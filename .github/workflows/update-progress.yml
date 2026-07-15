@@ -1,0 +1,88 @@
+name: Update Project Progress
+
+on:
+  # Triggers instantly when cards/items on your Project Board are moved, created, or deleted
+  project_card:
+    types: [moved, created, deleted]
+  project_item:
+    types: [moved, created, deleted]
+  # Allows you to manually trigger it from the Actions tab for quick testing
+  workflow_dispatch:
+
+# GRANTS WRITE PERMISSION DIRECTLY TO THE GITHUB_TOKEN FOR THIS WORKFLOW
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    env:
+      OWNER: "CSE499-Senior-Project"
+      PROJECT_NUMBER: 2
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: progressbar
+
+      - name: Calculate Project Progress
+        id: calc
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching project data from GitHub API..."
+
+          # 1. Run GraphQL query using GitHub CLI to retrieve project items and their status fields
+          RESPONSE=$(gh api graphql -f query='
+            query($owner: String!, $number: Int!) {
+              organization(login: $owner) {
+                projectV2(number: $number) {
+                  items(first: 100) {
+                    nodes {
+                      fieldValueByName(name: "Status") {
+                        ... on ProjectV2ItemFieldSingleSelectValue {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }' -f owner="$OWNER" -F number=$PROJECT_NUMBER)
+
+          # 2. Extract total items and completed "Done" items using jq
+          TOTAL=$(echo "$RESPONSE" | jq '[.data.organization.projectV2.items.nodes[]] | length')
+          DONE=$(echo "$RESPONSE" | jq '[.data.organization.projectV2.items.nodes[] | select(.fieldValueByName.name == "Done")] | length')
+
+          echo "Total items: $TOTAL"
+          echo "Completed items (Done): $DONE"
+
+          # 3. Fallback handle if the project is empty to avoid division-by-zero
+          if [ "$TOTAL" -eq 0 ]; then
+            PERCENTAGE=0
+          else
+            PERCENTAGE=$(( DONE * 100 / TOTAL ))
+          fi
+
+          echo "Progress: $PERCENTAGE%"
+          echo "percent=$PERCENTAGE" >> $GITHUB_OUTPUT
+
+      - name: Generate and Update Progress Bar
+        run: |
+          PERCENT=${{ steps.calc.outputs.percent }}
+          
+          # Generates a clean green SVG progress bar (geps.dev)
+          BAR_IMG="![](https://geps.dev/progress/$PERCENT)"
+          
+          # Replaces the content in README.md between the placeholder comments
+          sed -i '//,// {
+            //! { //! d }
+          }' README.md
+          
+          sed -i "//a $BAR_IMG" README.md
+
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update project progress bar to ${{ steps.calc.outputs.percent }}%"
+          branch: progressbar
