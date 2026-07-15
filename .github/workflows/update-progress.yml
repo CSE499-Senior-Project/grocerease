@@ -67,18 +67,10 @@ jobs:
           PERCENT=${{ steps.calc.outputs.percent }}
           BAR_IMG="![](https://geps.dev/progress/$PERCENT)"
           
-          awk -v img="$BAR_IMG" '
-            // { 
-              print
-              print ""
-              print img
-              print ""
-              skip=1
-              next 
-            }
-            // { skip=0 }
-            !skip { print }
-          ' README.md > temp.md && mv temp.md README.md
+          # This Perl command looks explicitly for the START and END tags 
+          # and replaces ONLY what is between them. It is mathematically 
+          # incapable of appending to random lines.
+          perl -0777 -pi -e "s/(?<=).*?(?=)/\n\n$BAR_IMG\n\n/s" README.md
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
