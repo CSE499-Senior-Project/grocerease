@@ -30,7 +30,7 @@ jobs:
       - name: Calculate Project Progress
         id: calc
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PROJECT_PAT }}
         run: |
           echo "Fetching project data from GitHub API..."
 
