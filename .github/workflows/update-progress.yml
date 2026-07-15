@@ -65,9 +65,22 @@ jobs:
       - name: Generate and Update Progress Bar
         run: |
           PERCENT=${{ steps.calc.outputs.percent }}
-          BAR_IMG="![](https://geps.dev/progress/$PERCENT)"
           
-          perl -0777 -pi -e "s|(?<=).*?(?=)|\n\n$BAR_IMG\n\n|s" README.md
+          export BAR_IMG="![](https://geps.dev/progress/$PERCENT)"
+          
+          python3 -c '
+          import os, re
+          
+          with open("README.md", "r") as f: 
+              content = f.read()
+              
+          new_bar = "\n\n" + os.environ["BAR_IMG"] + "\n\n"
+          
+          new_content = re.sub(r".*?", new_bar, content, flags=re.DOTALL)
+          
+          with open("README.md", "w") as f: 
+              f.write(new_content)
+          '
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
