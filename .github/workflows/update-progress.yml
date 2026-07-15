@@ -76,12 +76,19 @@ jobs:
           # Generates a clean green SVG progress bar (geps.dev)
           BAR_IMG="![](https://geps.dev/progress/$PERCENT)"
           
-          # Replaces the content in README.md between the placeholder comments
-          sed -i '//,// {
-            //! { //! d }
-          }' README.md
-          
-          sed -i "//a $BAR_IMG" README.md
+          # Using awk for a rock-solid multiline text replacement
+          awk -v img="$BAR_IMG" '
+            // { 
+              print
+              print ""
+              print img
+              print ""
+              skip=1
+              next 
+            }
+            // { skip=0 }
+            !skip { print }
+          ' README.md > temp.md && mv temp.md README.md
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
