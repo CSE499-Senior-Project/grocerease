@@ -3,7 +3,7 @@ name: Update Project Progress
 on:
   push:
     branches:
-      - progressbar
+      - develop # Only triggers on pushes to develop
   schedule:
     - cron: '0 */12 * * *'
   workflow_dispatch:
@@ -20,8 +20,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          ref: progressbar
+        # (Removed ref: it now dynamically checks out the branch that triggered it)
 
       - name: Calculate Project Progress
         id: calc
@@ -70,18 +69,13 @@ jobs:
           python3 -c '
           import os, re
           
-          # Read the current README
           with open("README.md", "r") as f: 
               content = f.read()
               
-          # 1. NUKE FROM ORBIT: Erase everything from "# Project Roadmap" downwards. 
-          # This instantly deletes all duplicate tags, images, and glitches.
           clean_content = re.sub(r"# Project Roadmap.*", "", content, flags=re.DOTALL).rstrip()
           
-          # 2. REBUILD: Create one perfect, clean section
           new_section = "\n\n# Project Roadmap\n\nCurrent Progress:\n\n" + os.environ["BAR_IMG"] + "\n\n"
           
-          # 3. WRITE: Save the file
           with open("README.md", "w") as f: 
               f.write(clean_content + new_section)
           '
@@ -90,4 +84,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "docs: update project progress bar to ${{ steps.calc.outputs.percent }}%"
-          branch: progressbar
+          # (Removed branch: it now dynamically commits back to the active branch)
