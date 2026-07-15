@@ -1,4 +1,14 @@
-export default function Home() {
+import { createClient } from '@/utils/supabase/server'
+import { cookies } from 'next/headers'
+
+export default async function Home() {
+  // Initialize the Supabase client using your server-side helper
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
+  // Ping the authentication service to test the connection
+  const { error } = await supabase.auth.getSession()
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="text-center">
@@ -7,8 +17,7 @@ export default function Home() {
         </h1>
         <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
           Fresh groceries delivered directly to your door.
-        </p>
-        
+        </p>        
         <div className="flex gap-4 justify-center">
           <button className="bg-brand-primary hover:bg-brand-dark text-surface font-semibold py-3 px-8 rounded-lg transition-colors">
             Start Shopping
@@ -17,6 +26,17 @@ export default function Home() {
             Merchant Login
           </button>
         </div>
+        {error ? (
+        <div style={{ color: '#ff4d4f', marginTop: '1rem' }}>
+          <h2>Connection Failed ❌</h2>
+          <p>{error.message}</p>
+        </div>
+        ) : (
+        <div style={{ color: '#52c41a', marginTop: '1rem' }}>
+          <h2>Connected Successfully! ✅</h2>
+          <p>The Next.js frontend is actively talking to our Supabase backend.</p>
+        </div>
+        )}
       </div>
     </main>
   );
