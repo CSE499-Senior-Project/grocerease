@@ -10,6 +10,6 @@
   --color-surface-background: #f8fafc;
 
   /* Our Modern Tech Fonts (linking to layout.tsx variables) */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: var(--font-roboto-mono), ui-monospace, SFMono-Regular, monospace;
 }
