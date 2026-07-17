@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-// The equivalent of system-ui for headings
-const inter = Inter({
-subsets: ["latin"],
-variable: '--font-inter',
-display: 'swap',
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta-sans',
+  display: 'swap',
 });
 
 // The polished equivalent of Courier/monospace for body/prices
@@ -30,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${robotoMono.variable} h-full antialiased`}
+      className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-surface-background text-slate-900 ">{children}</body>
     </html>
