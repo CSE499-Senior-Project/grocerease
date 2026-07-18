@@ -31,7 +31,9 @@ export default function RootLayout({
       lang="en"
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-surface-background text-slate-900 ">{children}</body>
+      <body className="min-h-full flex flex-col font-sans bg-surface-background text-slate-900 ">
+        <main className="flex min-h-screen flex-col items-center justify-center p-24">{children}</main>
+      </body>
     </html>
   );
 }
