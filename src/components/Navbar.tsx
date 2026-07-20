@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import Logo from "@/components/layout/Logo";
+
 export default function Navbar() {
   return (
     <header className="border-b border-slate-200 bg-surface">
@@ -7,12 +9,7 @@ export default function Navbar() {
         className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8"
         aria-label="Main navigation"
       >
-        <Link
-          href="/"
-          className="text-2xl font-bold tracking-tight text-brand-primary"
-        >
-          GrocerEase
-        </Link>
+        <Logo />
 
         <div className="hidden items-center gap-8 md:flex">
           <Link
