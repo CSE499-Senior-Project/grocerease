@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default function LoginForm() {
   return (
-    <div className='space-y-3'>
+    <div className='space-y-3 rounded-2xl'>
       <div className='glass-card p-4'>
         {/* h1 will be removed once nav-bar is in place */}
         <h1 className="text-5xl font-bold tracking-tight text-slate-900 mb-6">
@@ -78,7 +78,7 @@ export default function LoginForm() {
 
           <p className="mt-6 text-center text-sm font-semibold">
             {"Don't have an account? "}
-            <Link href="/create-account" className="font-bold text-brand-primary hover:underline">
+            <Link href="/register" className="font-bold text-brand-primary hover:underline">
               Create one here
             </Link>
           </p>
