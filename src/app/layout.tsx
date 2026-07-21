@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import Navbar from "@/components/Navbar";
 
 import { CartProvider } from "@/context/CartContext";
 
@@ -37,6 +38,9 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary">
+        <header>
+          <Navbar />
+        </header>
         <main className="flex min-h-screen flex-col items-center justify-center m-4">
           <CartProvider>{children}</CartProvider>
         </main>

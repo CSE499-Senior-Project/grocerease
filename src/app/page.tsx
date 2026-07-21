@@ -3,19 +3,19 @@ import Categories from "@/components/Categories";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
-import Navbar from "@/components/Navbar";
+// import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
 
-      <main>
+      {/* <main> */}
         <Hero />
         <Categories />
         <FeaturedProducts />
         <Benefits />
-      </main>
+      {/* </main> */}
 
       <Footer />
     </>
