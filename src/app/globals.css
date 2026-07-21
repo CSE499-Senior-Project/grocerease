@@ -2,14 +2,35 @@
 
 @theme {
   /* Our Fresh Organic Colors */
-  --color-brand-primary: #16a34a;
-  --color-brand-light: #dcfce7;
-  --color-brand-dark: #15803d;
-  --color-accent: #f59e0b;
-  --color-surface: #ffffff;
-  --color-surface-background: #f8fafc;
+  --color-brand-primary: #16a34a; /* Fresh Green: primary buttons, active states, and logo */
+  --color-brand-light: #dcfce7; /* Soft Sage: subtle backgrounds, like category pill buttons */
+  --color-brand-dark: #15803d; /* Deep Green: user hovers over a primary button*/
+  --color-accent: #f59e0b; /* Organic Amber: notification badges, stars/reviews, or "Sale" tags */
+  --color-surface: #fff; /* */
+  --color-surface-bg: #f8fafc; /* App Background: crisp, slight off-white that makes white product cards pop */
+  --color-txt-primary: #0F172A; /* Primary Text: rich, deep slate gray instead of pure black for softer reading */ 
 
   /* Our Modern Tech Fonts (linking to layout.tsx variables) */
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: var(--font-roboto-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Background images */
+  --background-image-hero-login: url('/images/shopping_cart_supermarket.jpg');
+  --background-image-hero-login1: url('/images/shopping_cart_background.jpg');
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.50);
+  /* border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px; */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.28)
+  /* border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) */
 }

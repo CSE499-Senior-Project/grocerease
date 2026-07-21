@@ -18,9 +18,11 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GrocerEase Platform",
-  description:
-    "GrocerEase Platform. Fresh groceries delivered directly to your door.",
+  title: {
+    template: "%s | GrocerEase",
+    default: "GrocerEase"
+  },
+  description: "GrocerEase Platform. Fresh groceries delivered directly to your door.",
 };
 
 export default function RootLayout({
@@ -31,10 +33,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${robotoMono.variable} h-full antialiased`}
+      data-scroll-bevahior="smooth"
+      className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-surface-background font-sans text-slate-900">
-        <CartProvider>{children}</CartProvider>
+      <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary">
+        <main className="flex min-h-screen flex-col items-center justify-center m-4">{children}</main>
       </body>
     </html>
   );
