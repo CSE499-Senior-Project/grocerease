@@ -1,22 +1,18 @@
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
-import LoginForm from "../ui/login/login-form";
-import Image1 from "@/components/image1"
+// import { redirect } from "next/navigation";
+import RegisterForm from "../ui/register/register-form";
 // import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: 'Register',
 };
 
-export default function RegistrationPage(){
+export default function LoginPage(){
   return (
-    <div className="flex w-full items-center justify-center p-4 py-16 md:py-24 min-h-screen">
-      <div className="flex w-full max-w-5x1 flex-col items-center gap-8 md:flex-row md:items-stretch md:gap-12">
-        <div className="relative hidden w-full flex-1 items-center justify-center overflow-hidden md:flex md:w-1/2">
-          <Image1 />
-        </div>
-        <div className="flex w-full max-w-[450px] flex-col justify-center md:w-1/2">
-          <LoginForm />
+    <div className="flex w-full items-stretch items-center md:p-24justify-center bg-hero-login bg-cover bg-center rounded-2xl bg-no-repeat max-w-[1039px] min-h-[612px] overflow-hidden">
+      <div className="flex w-full h-full flex-col items-center justify-end md:flex-row md:items-stretch md:justify-end">
+        <div className="flex w-full h-full max-w-[450px] flex-col justify-center md:w-1/2">
+          <RegisterForm />
         </div>
       </div>
     </div>

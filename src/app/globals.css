@@ -15,7 +15,8 @@
   --font-mono: var(--font-roboto-mono), ui-monospace, SFMono-Regular, monospace;
 
   /* Background images */
-  --background-image-hero-login: url('/images/shopping_cart_background.jpg');
+  --background-image-hero-login: url('/images/shopping_cart_supermarket.jpg');
+  --background-image-hero-login1: url('/images/shopping_cart_background.jpg');
 }
 
 html {
@@ -23,11 +24,13 @@ html {
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.75);
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
+  background: rgba(255, 255, 255, 0.50);
+  /* border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px; */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.28)
+  /* border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) */
 }

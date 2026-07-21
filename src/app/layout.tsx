@@ -17,7 +17,10 @@ display: 'swap',
 
 // This sets the HTML  meta tags for your app
 export const metadata: Metadata = {
-  title: "GrocerEase Platform",
+  title: {
+    template: "%s | GrocerEase",
+    default: "GrocerEase"
+  },
   description: "GrocerEase Platform. Fresh groceries delivered directly to your door.",
 };
 
@@ -33,7 +36,7 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary">
-        <main className="flex min-h-screen flex-col items-center justify-center p-24">{children}</main>
+        <main className="flex min-h-screen flex-col items-center justify-center m-4">{children}</main>
       </body>
     </html>
   );
