@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
+
+import { CartProvider } from "@/context/CartContext";
+
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-plus-jakarta-sans',
-  display: 'swap',
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
-// The polished equivalent of Courier/monospace for body/prices
 const robotoMono = Roboto_Mono({
-subsets: ["latin"],
-variable: '--font-roboto-mono',
-display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-roboto-mono",
+  display: "swap",
 });
 
-// This sets the HTML  meta tags for your app
 export const metadata: Metadata = {
   title: {
     template: "%s | GrocerEase",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  }: Readonly<{
+}: Readonly<{
   children: React.ReactNode;
 }>) {
   return (

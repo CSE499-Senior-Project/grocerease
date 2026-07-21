@@ -1,13 +1,21 @@
-import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers'
+import Benefits from "@/components/Benefits";
+import Categories from "@/components/Categories";
+import FeaturedProducts from "@/components/FeaturedProducts";
+import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+import Navbar from "@/components/Navbar";
 
-export default async function Home() {
-  // Initialize the Supabase client using your server-side helper
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
+export default function Home() {
+  return (
+    <>
+      <Navbar />
 
-  // Ping the authentication service to test the connection
-  const { error } = await supabase.auth.getSession()
+      <main>
+        <Hero />
+        <Categories />
+        <FeaturedProducts />
+        <Benefits />
+      </main>
 
   return (
     <div className="text-center">
