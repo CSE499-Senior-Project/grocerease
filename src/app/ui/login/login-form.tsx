@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRightIcon, AtSymbolIcon, KeyIcon } from '@heroicons/react/24/outline';
+import LoginButton from '@/components/LoginButton';
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
 // import { useSearchParams } from 'next/navigation';
@@ -50,7 +51,8 @@ export default function LoginForm() {
           </div>
 
           <form action="">
-            <button type='submit' className='w-full flex items-center justify-center gap-3 bg-surface-bg border border-brand-primary rounded-md p-3 text-brand-primary hover:bg-green-50 transition-colors font-medium shadow-sm cursor-pointer'>
+            <LoginButton />
+            {/* <button type='submit' className='w-full flex items-center justify-center gap-3 bg-surface-bg border border-brand-primary rounded-md p-3 text-brand-primary hover:bg-green-50 transition-colors font-medium shadow-sm cursor-pointer'>
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
                 d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'
@@ -70,7 +72,7 @@ export default function LoginForm() {
                 />
               </svg>
               Sign in with Google
-            </button>
+            </button> */}
           </form>
 
           <p className="mt-6 text-center text-sm font-semibold">
