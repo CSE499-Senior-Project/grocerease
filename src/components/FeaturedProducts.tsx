@@ -1,11 +1,16 @@
 import Link from "next/link";
 
 import ProductCard from "@/components/ProductCard";
-import { featuredProducts } from "@/data/products";
+import { getFeaturedProducts } from "@/lib/products";
 
-export default function FeaturedProducts() {
+export default async function FeaturedProducts() {
+  const { products, error } = await getFeaturedProducts(8);
+
   return (
-    <section id="products" className="bg-surface-background py-20 sm:py-24">
+    <section
+      id="products"
+      className="bg-surface-background py-20 sm:py-24"
+    >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
@@ -31,11 +36,43 @@ export default function FeaturedProducts() {
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {error ? (
+          <div
+            role="alert"
+            className="mt-12 rounded-2xl border border-red-200 bg-red-50 px-6 py-8 text-center"
+          >
+            <h3 className="text-lg font-bold text-red-800">
+              Unable to load products
+            </h3>
+
+            <p className="mt-2 text-red-700">
+              {error}
+            </p>
+
+            <p className="mt-2 text-sm text-red-600">
+              Please refresh the page or try again later.
+            </p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="mt-12 rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center">
+            <h3 className="text-xl font-bold text-slate-900">
+              No products available
+            </h3>
+
+            <p className="mt-3 text-slate-600">
+              New grocery items will appear here once they are added.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
