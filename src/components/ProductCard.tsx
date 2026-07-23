@@ -17,7 +17,8 @@ export default function ProductCard({ product }: ProductCardProps) {
     <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:shadow-lg">
       <Link
         href={`/products/${product.id}`}
-        className="relative block aspect-square overflow-hidden bg-slate-100"
+        aria-label={`View details for ${product.name}`}
+        className="relative block aspect-square cursor-pointer overflow-hidden bg-slate-100"
       >
         <Image
           src={product.image}
@@ -50,7 +51,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             type="button"
             onClick={() => addToCart(product)}
             disabled={!product.inStock}
-            className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-slate-300"
+            className="cursor-pointer rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             {product.inStock ? "Add to Cart" : "Out of Stock"}
           </button>
