@@ -50,7 +50,7 @@ export default function LoginForm() {
             <div className="flex-grow border-t border-brand-primary"></div>
           </div>
 
-          <form action="">
+          <form>
             <LoginButton />
           </form>
 
