@@ -19,8 +19,8 @@ interface CartContextValue {
   cartCount: number;
   cartTotal: number;
   addToCart: (product: Product) => void;
-  removeFromCart: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -46,22 +46,31 @@ export function CartProvider({ children }: CartProviderProps) {
       if (existingItem) {
         return currentItems.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+              }
             : item,
         );
       }
 
-      return [...currentItems, { ...product, quantity: 1 }];
+      return [
+        ...currentItems,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
     });
   }
 
-  function removeFromCart(productId: number) {
+  function removeFromCart(productId: string) {
     setCartItems((currentItems) =>
       currentItems.filter((item) => item.id !== productId),
     );
   }
 
-  function updateQuantity(productId: number, quantity: number) {
+  function updateQuantity(productId: string, quantity: number) {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -69,7 +78,12 @@ export function CartProvider({ children }: CartProviderProps) {
 
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item.id === productId ? { ...item, quantity } : item,
+        item.id === productId
+          ? {
+              ...item,
+              quantity,
+            }
+          : item,
       ),
     );
   }
