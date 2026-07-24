@@ -21,20 +21,20 @@ export default function RegisterForm() {
 
           <form action="" className='w-full'>
             <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary' htmlFor="firstName">
+              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary' htmlFor="first_name">
                 First Name
               </label>
               <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="text" name="firstName" id="firstName" placeholder='Enter your first name' autoComplete='given-name' required /> {/* defaultValue={} />*/}
+                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="text" name="first_name" id="first_name" placeholder='Enter your first name' autoComplete='given-name' required /> {/* defaultValue={} />*/}
                 <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
               </div>
             </div>
             <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary' htmlFor="lastName">
+              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary' htmlFor="last_name">
                 Last Name
               </label>
               <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="text" name="lastName" id="lastName" placeholder='Enter your last name' autoComplete='family-name' required /> {/* defaultValue={} />*/}
+                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="text" name="last_name" id="last_name" placeholder='Enter your last name' autoComplete='family-name' required /> {/* defaultValue={} />*/}
                 <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
               </div>
             </div>
@@ -57,11 +57,11 @@ export default function RegisterForm() {
               </div>
             </div>
             <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider' htmlFor="confirmPassword">
+              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider' htmlFor="confirm_password">
                 Confirm Password
               </label>
               <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="password" name='confirmPassword' id='confirmPassword' placeholder='Confirm your password' autoComplete='current-password' required minLength={6} />
+                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="password" name='confirm_password' id='confirm_password' placeholder='Confirm your password' autoComplete='current-password' required minLength={6} />
                 <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
               </div>
             </div>
