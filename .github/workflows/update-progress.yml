@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PROGRESS_UPDATE_PAT }}
         # (Removed ref: it now dynamically checks out the branch that triggered it)
 
       - name: Calculate Project Progress
