@@ -25,3 +25,6 @@ export const LoginSchema = z.object({ // Pretty sure I will have to use differen
   .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter" })
   .trim(),
 });
+
+export type RegistrationData = z.infer<typeof RegistrationSchema>;
+export type LoginData = z.infer<typeof LoginSchema>;

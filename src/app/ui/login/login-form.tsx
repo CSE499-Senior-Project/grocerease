@@ -2,6 +2,7 @@
 
 import { ArrowRightIcon, AtSymbolIcon, KeyIcon } from '@heroicons/react/24/outline';
 import LoginButton from '@/components/LoginButton';
+import FormInput from '@/components/FormInput';
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
 // import { useSearchParams } from 'next/navigation';

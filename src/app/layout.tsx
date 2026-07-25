@@ -38,7 +38,7 @@ export default function RootLayout({
       data-scroll-bevahior="smooth"
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary">
+      <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary" suppressHydrationWarning>
         <header className="border-b border-slate-200 bg-surface">
           <Navbar />
         </header>

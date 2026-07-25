@@ -2,11 +2,29 @@
 
 import { ArrowRightIcon, AtSymbolIcon, KeyIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import LoginButton from '@/components/LoginButton';
+import FormInput from '@/components/FormInput';
+import { useForm } from "react-hook-form";
+import { RegistrationSchema, type RegistrationData } from '@/types/profile';
+import { zodResolver } from "@hookform/resolvers/zod"
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
 // import { useSearchParams } from 'next/navigation';
 
 export default function RegisterForm() {
+  // const onSubmit = async (data) => {
+  //   await login()
+  // }
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors},
+  } = useForm<RegistrationData>({
+    resolver: zodResolver(RegistrationSchema),
+  });
+
+  const onSubmit = handleSubmit((data) => console.log(data))
+
   return (
     <div className='space-y-3 rounded-2xl h-full'>
       <div className='glass-card p-4 md:p-4 h-full flex flex-col md:rounded-l-none md:rounded-r-2xl justify-center'>
@@ -19,52 +37,61 @@ export default function RegisterForm() {
             Please create an account to continue
           </h1>
 
-          <form action="" className='w-full'>
-            <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary' htmlFor="first_name">
-                First Name
-              </label>
-              <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="text" name="first_name" id="first_name" placeholder='Enter your first name' autoComplete='given-name' required /> {/* defaultValue={} />*/}
-                <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
-              </div>
-            </div>
-            <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary' htmlFor="last_name">
-                Last Name
-              </label>
-              <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="text" name="last_name" id="last_name" placeholder='Enter your last name' autoComplete='family-name' required /> {/* defaultValue={} />*/}
-                <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
-              </div>
-            </div>
-            <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary' htmlFor="email">
-                Email
-              </label>
-              <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="email" name="email" id="email" placeholder='Enter your email address' autoComplete='email' required />
-                <AtSymbolIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
-              </div>
-            </div>
-            <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider' htmlFor="password">
-                Password
-              </label>
-              <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="password" name='password' id='password' placeholder='Enter your password' autoComplete='current-password' required minLength={6} />
-                <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
-              </div>
-            </div>
-            <div>
-              <label className='mb-3 mt-5 block text-s font-semibold uppercase tracking-wider' htmlFor="confirm_password">
-                Confirm Password
-              </label>
-              <div className='relative'>
-                <input className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' type="password" name='confirm_password' id='confirm_password' placeholder='Confirm your password' autoComplete='current-password' required minLength={6} />
-                <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
-              </div>
-            </div>
+          <form onSubmit={onSubmit} className='w-full'>
+            
+            <FormInput
+              label="First Name"
+              name="first_name"
+              register={register}
+              error={errors.first_name}
+              placeholder='Enter your first name'
+              autoComplete='given-name'
+              icon={UserCircleIcon}
+            />
+
+            <FormInput
+              label="Last Name"
+              name="last_name"
+              register={register}
+              error={errors.last_name}
+              placeholder='Enter your last name'
+              autoComplete='family-name'
+              icon={UserCircleIcon}
+            />
+            
+            <FormInput
+              label="Email"
+              name="email"
+              type="email"
+              register={register}
+              error={errors.email}
+              placeholder='Enter your email address'
+              autoComplete='email'
+              icon={AtSymbolIcon}
+            />
+            
+            <FormInput
+              label="Password"
+              name="password"
+              type="password"
+              register={register}
+              error={errors.password}
+              placeholder='Enter a password'
+              autoComplete='current-password'
+              icon={KeyIcon}
+            />
+            
+            <FormInput
+              label="Confirm Password"
+              name="confirm_password"
+              type="confirm_password"
+              register={register}
+              error={errors.confirm_password}
+              placeholder='Confirm your password'
+              autoComplete='current-password'
+              icon={KeyIcon}
+            />
+            
             <input type="hidden" name='redirectTo' /> {/*value={} /> */}
             <button type='submit' className='rounded-md border border-brand-primary py-[9px] text-brand-primary hover:bg-brand-primary bg-surface-bg hover:text-surface-bg font-bold mt-8 w-full flex items-center justify-center gap-2 cursor-pointer'> {/*aria-disabled disabled>*/}
               Create your account <ArrowRightIcon className='h-5 w-5' />
