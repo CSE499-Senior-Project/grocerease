@@ -5,7 +5,7 @@ export const RegistrationSchema = z.object({
   last_name: z.string().min(1, { message: "Last name is required" }).trim(),
   email: z.email({ message: "Invalid email format" }).lowercase().trim(),
   password: z.string()
-  .min(8)
+  .min(8, "Password must be at least 8 characters long")
   .regex(/[0-9]/, { message: "Must contain at least one number "})
   .regex(/[^a-zA-Z0-9]/, { message: "Must contain at least one special character" })
   .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter" })
@@ -16,7 +16,7 @@ export const RegistrationSchema = z.object({
   path: ["confirm_password"],
 });
 
-export const LoginSchema = z.object({ // Pretty sure I will have to use different validators and messages for Login
+export const LoginSchema = z.object({
   email: z.email({ message: "Invalid email format" }).lowercase().trim(),
   password: z.string().min(1, { message: "Password is required "}).trim(),
 });

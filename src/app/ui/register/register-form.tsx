@@ -102,7 +102,7 @@ export default function RegisterForm() {
             <FormInput
               label="Confirm Password"
               name="confirm_password"
-              type="confirm_password"
+              type="password"
               register={register}
               error={errors.confirm_password}
               placeholder='Confirm your password'

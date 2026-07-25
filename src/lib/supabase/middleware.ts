@@ -33,7 +33,25 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  await supabase.auth.getUser();
+  const { data: { user }} = await supabase.auth.getUser();
+
+  const currentPath = request.nextUrl.pathname;
+
+  console.log("Middleware Path:", currentPath);
+  console.log("User ID Found:", user?.id);
+
+  if (user && (currentPath.startsWith('/login') || currentPath.startsWith('/register'))) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/';
+
+    const redirectResponse = NextResponse.redirect(redirectUrl);
+
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+
+    return redirectResponse;
+  }
 
   return supabaseResponse
 };
