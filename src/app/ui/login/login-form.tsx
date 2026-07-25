@@ -8,18 +8,21 @@ import { LoginSchema, type LoginData } from '@/types/profile';
 import { zodResolver } from "@hookform/resolvers/zod"
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
-// import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
+  const searchParams = useSearchParams();
+  const isRegistered = searchParams.get("registered") === "true";
+
   const {
-      register,
-      handleSubmit,
-      formState: { errors},
-    } = useForm<LoginData>({
-      resolver: zodResolver(LoginSchema),
-    });
+    register,
+    handleSubmit,
+    formState: { errors},
+  } = useForm<LoginData>({
+    resolver: zodResolver(LoginSchema),
+  });
   
-    const onSubmit = handleSubmit((data) => console.log(data))
+  const onSubmit = handleSubmit((data) => console.log(data))
 
   return (
     <div className='space-y-3 rounded-2xl h-full'>
@@ -28,6 +31,16 @@ export default function LoginForm() {
         <h1 className="text-5xl font-bold tracking-tight text-slate-900 mb-6">
           Welcome to <span className="text-brand-primary">GrocerEase</span>
         </h1>
+
+        {/* Conditionally render the success banner when the user just registered! */}
+        {isRegistered && (
+          <div className="mb-6 rounded-md bg-green-50 p-4 border border-green-200">
+            <p className="text-sm font-medium text-green-800">
+              Account successfully created! Please log in below.
+            </p>
+          </div>
+        )}
+
         <div className='flex-1'>
           <h1 className='mb-6 text-2xl font-bold'>
             Please log in to continue
