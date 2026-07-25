@@ -13,7 +13,6 @@ import Link from 'next/link';
 export default function LoginForm() {
   const {
       register,
-      setValue,
       handleSubmit,
       formState: { errors},
     } = useForm<LoginData>({
@@ -56,7 +55,7 @@ export default function LoginForm() {
               autoComplete='current-password'
               icon={KeyIcon}
             />
-            
+
             <input type="hidden" name='redirectTo' /> {/*value={} /> */}
             <button type='submit' className='rounded-md border border-brand-primary py-[9px] text-brand-primary hover:bg-brand-primary bg-surface-bg hover:text-surface-bg font-bold mt-8 w-full flex items-center justify-center gap-2 cursor-pointer'> {/*aria-disabled disabled>*/}
               Log in <ArrowRightIcon className='h-5 w-5' />

@@ -16,7 +16,6 @@ export default function RegisterForm() {
   // }
   const {
     register,
-    setValue,
     handleSubmit,
     formState: { errors},
   } = useForm<RegistrationData>({

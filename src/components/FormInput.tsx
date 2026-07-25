@@ -38,7 +38,7 @@ export default function FormInput<T extends FieldValues>({
           autoComplete={autoComplete}
           aria-invalid={!!error}
           className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' 
-        /> {/* defaultValue={} />*/}
+        />
         {Icon && (
           <Icon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
         )}
