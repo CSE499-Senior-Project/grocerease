@@ -1,19 +1,18 @@
-import { UseFormRegister, FieldError } from "react-hook-form";
+import { UseFormRegister, FieldError, FieldValues, Path } from "react-hook-form";
 import { type ElementType } from "react";
-import { type RegistrationData } from "@/types/profile";
 
-interface FormInputProps {
+interface FormInputProps<T extends FieldValues> {
   label: string;
-  name: keyof RegistrationData;
- register: UseFormRegister<RegistrationData>;
- error?: FieldError;
- type?: string;
- placeholder?: string;
- autoComplete?: string;
- icon?: ElementType;
+  name: Path<T>;
+  register: UseFormRegister<T>;
+  error?: FieldError;
+  type?: string;
+  placeholder?: string;
+  autoComplete?: string;
+  icon?: ElementType;
 }
 
-export default function FormInput({ 
+export default function FormInput<T extends FieldValues>({ 
   label,
   name,
   register,
@@ -22,7 +21,7 @@ export default function FormInput({
   placeholder,
   autoComplete,
   icon: Icon,
-}: FormInputProps) {
+}: FormInputProps<T>) {
 
   return (
     <div>

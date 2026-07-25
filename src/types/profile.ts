@@ -18,12 +18,7 @@ export const RegistrationSchema = z.object({
 
 export const LoginSchema = z.object({ // Pretty sure I will have to use different validators and messages for Login
   email: z.email({ message: "Invalid email format" }).lowercase().trim(),
-  password: z.string()
-  .min(8)
-  .regex(/[0-9]/, { message: "Must contain at least one number "})
-  .regex(/[^a-zA-Z0-9]/, { message: "Must contain at least one special character" })
-  .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter" })
-  .trim(),
+  password: z.string().min(1, { message: "Password is required "}).trim(),
 });
 
 export type RegistrationData = z.infer<typeof RegistrationSchema>;
