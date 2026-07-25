@@ -8,6 +8,7 @@ import { RegistrationSchema, type RegistrationData } from '@/types/profile';
 import { zodResolver } from "@hookform/resolvers/zod"
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
+import { registerUser } from '@/app/lib/actions';
 // import { useSearchParams } from 'next/navigation';
 
 export default function RegisterForm() {
@@ -17,12 +18,21 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors},
   } = useForm<RegistrationData>({
     resolver: zodResolver(RegistrationSchema),
   });
 
-  const onSubmit = handleSubmit((data) => console.log(data))
+  const onSubmit = async (data: RegistrationData) => {
+    const response = await registerUser(data);
+
+    if (response?.error) {
+      setError("root", {
+        message: response.error
+      });
+    }
+  };
 
   return (
     <div className='space-y-3 rounded-2xl h-full'>
@@ -36,7 +46,16 @@ export default function RegisterForm() {
             Please create an account to continue
           </h1>
 
-          <form onSubmit={onSubmit} className='w-full'>
+          {/* Conditionally render the Server Error banner */}
+          {errors.root && (
+            <div className="mb-6 rounded-md bg-red-50 p-4 border border-red-200">
+              <p className="text-sm font-medium text-red-800">
+                {errors.root.message}
+              </p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             
             <FormInput
               label="First Name"

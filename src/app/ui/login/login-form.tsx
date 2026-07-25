@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { loginUser } from '@/app/lib/actions';
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
@@ -17,12 +18,21 @@ export default function LoginForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors},
   } = useForm<LoginData>({
     resolver: zodResolver(LoginSchema),
   });
   
-  const onSubmit = handleSubmit((data) => console.log(data))
+  const onSubmit = async (data: LoginData) => {
+    const response = await loginUser(data);
+
+    if (response?.error) {
+      setError("root", {
+        message: response.error
+      });
+    }
+  };
 
   return (
     <div className='space-y-3 rounded-2xl h-full'>
@@ -46,7 +56,7 @@ export default function LoginForm() {
             Please log in to continue
           </h1>
 
-          <form onSubmit={onSubmit} className='w-full'>
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             <FormInput
               label="Email"
               name="email"
