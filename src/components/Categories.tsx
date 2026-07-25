@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const categories = [
   {
     name: "Fresh Produce",
@@ -51,12 +53,12 @@ export default function Categories() {
             </p>
           </div>
 
-          <a
+          <Link
             href="/products"
             className="font-semibold text-brand-primary transition-colors hover:text-brand-dark"
           >
             View all products →
-          </a>
+          </Link>
         </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -77,12 +79,12 @@ export default function Categories() {
                 {category.description}
               </p>
 
-              <a
+              <Link
                 href={`/products?category=${encodeURIComponent(category.name)}`}
                 className="mt-5 inline-flex font-semibold text-brand-primary transition-colors hover:text-brand-dark"
               >
                 Shop category →
-              </a>
+              </Link>
             </article>
           ))}
         </div>
