@@ -37,9 +37,7 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary">
-        <main className="flex min-h-screen flex-col items-center justify-center m-4">
-          <CartProvider>{children}</CartProvider>
-        </main>
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   );
