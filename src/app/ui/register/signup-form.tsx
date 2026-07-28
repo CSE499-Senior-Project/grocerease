@@ -4,32 +4,30 @@ import {
   ArrowRightIcon,
   AtSymbolIcon,
   KeyIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import LoginButton from '@/components/LoginButton';
+import SignInButton from '@/components/SignInButton';
 import FormInput from '@/components/FormInput';
 import { useForm } from 'react-hook-form';
-import { LoginSchema, type LoginData } from '@/types/profile';
+import { SignUpSchema, type SignUpData } from '@/types/profile';
 import { zodResolver } from '@hookform/resolvers/zod';
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { loginUser } from '@/actions/actions';
+import { registerUser } from '@/actions/actions';
+// import { useSearchParams } from 'next/navigation';
 
-export default function LoginForm() {
-  const searchParams = useSearchParams();
-  const isRegistered = searchParams.get('registered') === 'true';
-
+export default function SignUpForm() {
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<LoginData>({
-    resolver: zodResolver(LoginSchema),
+  } = useForm<SignUpData>({
+    resolver: zodResolver(SignUpSchema),
   });
 
-  const onSubmit = async (data: LoginData) => {
-    const response = await loginUser(data);
+  const onSubmit = async (data: SignUpData) => {
+    const response = await registerUser(data);
 
     if (response?.error) {
       setError('root', {
@@ -45,20 +43,39 @@ export default function LoginForm() {
         <h1 className='text-5xl font-bold tracking-tight text-slate-900 mb-6'>
           Welcome to <span className='text-brand-primary'>GrocerEase</span>
         </h1>
-
-        {/* Conditionally render the success banner when the user just registered! */}
-        {isRegistered && (
-          <div className='mb-6 rounded-md bg-green-50 p-4 border border-green-200'>
-            <p className='text-sm font-medium text-green-800'>
-              Account successfully created! Please log in below.
-            </p>
-          </div>
-        )}
-
         <div className='flex-1'>
-          <h1 className='mb-6 text-2xl font-bold'>Please log in to continue</h1>
+          <h1 className='mb-6 text-2xl font-bold'>
+            Please create an account to continue
+          </h1>
+
+          {/* Conditionally render the Server Error banner */}
+          {errors.root && (
+            <div className='mb-6 rounded-md bg-red-50 p-4 border border-red-200'>
+              <p className='text-sm font-medium text-red-800'>
+                {errors.root.message}
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
+            <FormInput
+              label='First Name'
+              name='first_name'
+              register={register}
+              error={errors.first_name}
+              placeholder='Enter your first name'
+              autoComplete='given-name'
+              icon={UserCircleIcon}
+            />
+            <FormInput
+              label='Last Name'
+              name='last_name'
+              register={register}
+              error={errors.last_name}
+              placeholder='Enter your last name'
+              autoComplete='family-name'
+              icon={UserCircleIcon}
+            />
             <FormInput
               label='Email'
               name='email'
@@ -75,7 +92,17 @@ export default function LoginForm() {
               type='password'
               register={register}
               error={errors.password}
-              placeholder='Enter your password'
+              placeholder='Enter a password'
+              autoComplete='current-password'
+              icon={KeyIcon}
+            />
+            <FormInput
+              label='Confirm Password'
+              name='confirm_password'
+              type='password'
+              register={register}
+              error={errors.confirm_password}
+              placeholder='Confirm your password'
               autoComplete='current-password'
               icon={KeyIcon}
             />
@@ -86,7 +113,7 @@ export default function LoginForm() {
             >
               {' '}
               {/*aria-disabled disabled>*/}
-              Log in <ArrowRightIcon className='h-5 w-5' />
+              Create your account <ArrowRightIcon className='h-5 w-5' />
             </button>
           </form>
 
@@ -97,16 +124,16 @@ export default function LoginForm() {
           </div>
 
           <form>
-            <LoginButton />
+            <SignInButton />
           </form>
 
           <p className='mt-6 text-center text-sm font-semibold'>
-            {"Don't have an account? "}
+            {'Already have an account? '}
             <Link
-              href='/register'
+              href='/signin'
               className='font-bold text-brand-primary hover:underline'
             >
-              Create one here
+              Sign In!
             </Link>
           </p>
         </div>
