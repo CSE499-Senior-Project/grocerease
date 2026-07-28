@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { type LoginData, type RegistrationData } from "@/types/profile";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 export async function registerUser(data: RegistrationData) {
   try {

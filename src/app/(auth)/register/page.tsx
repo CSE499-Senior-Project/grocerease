@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 // import { redirect } from "next/navigation";
 import RegisterForm from "@/app/ui/register/register-form";
-// import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: 'Register',
