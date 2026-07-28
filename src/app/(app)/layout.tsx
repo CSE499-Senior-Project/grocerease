@@ -8,7 +8,7 @@ export default function AppLayout({
   return (
     <>
       <AppHeader />
-      <main>{children}</main>
+      {children}
     </>
   );
 }
