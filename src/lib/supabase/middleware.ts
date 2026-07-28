@@ -37,9 +37,6 @@ export async function updateSession(request: NextRequest) {
 
   const currentPath = request.nextUrl.pathname;
 
-  console.log("Middleware Path:", currentPath);
-  console.log("User ID Found:", user?.id);
-
   if (user && (currentPath.startsWith('/login') || currentPath.startsWith('/register'))) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/';
