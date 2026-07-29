@@ -23,7 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         className="relative block aspect-square cursor-pointer overflow-hidden bg-slate-100"
       >
         <Image
-          src={product.image}
+          src={product.image ?? "/images/products/placeholder.webp"}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

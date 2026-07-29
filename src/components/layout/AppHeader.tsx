@@ -3,12 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, User } from "lucide-react";
-
+import SignOutButton from "../SignOutButton";
 import { useCart } from "@/context/CartContext";
 import Logo from "@/components/layout/Logo";
+import { createClient } from "@/utils/supabase/server";
 
 // TODO: replace with real auth state once authentication is implemented.
-const isLoggedIn = false;
+const isLoggedIn = true;
+// const supabase = await createClient();
+
+// const user = await supabase.auth.getUser();
+
+// if 
+
+// const isLoggedIn = 
 
 export default function AppHeader() {
   const { cartCount } = useCart();
@@ -108,13 +116,7 @@ export default function AppHeader() {
                   >
                     Account
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="block w-full px-4 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-brand-light hover:text-brand-primary"
-                  >
-                    Sign Out
-                  </button>
+                  <SignOutButton />
                 </div>
               )}
             </div>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import AppHeader from "@/components/layout/AppHeader";
+import Footer from "@/components/Footer";
 
 import { CartProvider } from "@/context/CartContext";
 
@@ -36,9 +38,15 @@ export default function RootLayout({
       data-scroll-bevahior="smooth"
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary">
-        <CartProvider>{children}</CartProvider>
-      </body>
+      <CartProvider>
+        <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary" suppressHydrationWarning>
+          <AppHeader />
+          <main className="flex flex-col items-center justify-center m-4 flex-1">
+            {children}
+          </main>
+          <Footer />
+        </body>
+      </CartProvider>
     </html>
   );
 }
