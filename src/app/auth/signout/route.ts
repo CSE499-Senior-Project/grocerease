@@ -1,16 +1,13 @@
-import { createClient } from '@/utils/supabase/server'
-import { type NextRequest, NextResponse } from 'next/server'
+'use server';
 
-export async function POST(req: NextRequest) {
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
+
+export async function signOut() {
   const supabase = await createClient();
-
-  const { data: claimsData } = await supabase.auth.getClaims();
-
-  if (claimsData?.claims) {
-    await supabase.auth.signOut();
-  }
-
-  return NextResponse.redirect(new URL('/signin', req.url), {
-    status:302,
-  });
+  await supabase.auth.signOut();
+  
+  revalidatePath('/', 'layout');
+  redirect('/signin');
 }
