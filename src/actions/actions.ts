@@ -1,10 +1,10 @@
 'use server';
 
 import { redirect } from "next/navigation";
-import { type LoginData, type RegistrationData } from "@/types/profile";
+import { type SignInData, type SignUpData } from "@/types/profile";
 import { createClient } from "@/utils/supabase/server";
 
-export async function registerUser(data: RegistrationData) {
+export async function signupUser(data: SignUpData) {
   try {
     const supabase = await createClient();
 
@@ -27,10 +27,10 @@ export async function registerUser(data: RegistrationData) {
     return { error: "An unexpected error occurred. Please try again." };
   }
 
-  redirect('/login?registered=true');
+  redirect('/signin?signup=true');
 }
 
-export async function loginUser(data: LoginData) {
+export async function signinUser(data: SignInData) {
   try {
     const supabase = await createClient();
 

@@ -1,6 +1,6 @@
 export default function ProductsLoading() {
   return (
-    <main
+    <div
       aria-busy="true"
       aria-label="Loading product catalog"
       className="min-h-screen bg-surface-background"
@@ -81,6 +81,6 @@ export default function ProductsLoading() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

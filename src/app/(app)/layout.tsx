@@ -1,5 +1,3 @@
-import AppHeader from "@/components/layout/AppHeader";
-
 export default function AppLayout({
   children,
 }: Readonly<{
@@ -7,7 +5,6 @@ export default function AppLayout({
 }>) {
   return (
     <>
-      <AppHeader />
       {children}
     </>
   );

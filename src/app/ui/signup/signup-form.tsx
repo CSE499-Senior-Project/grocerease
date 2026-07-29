@@ -13,7 +13,7 @@ import { SignUpSchema, type SignUpData } from '@/types/profile';
 import { zodResolver } from '@hookform/resolvers/zod';
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
-import { registerUser } from '@/actions/actions';
+import { signupUser } from '@/actions/actions';
 // import { useSearchParams } from 'next/navigation';
 
 export default function SignUpForm() {
@@ -27,7 +27,7 @@ export default function SignUpForm() {
   });
 
   const onSubmit = async (data: SignUpData) => {
-    const response = await registerUser(data);
+    const response = await signupUser(data);
 
     if (response?.error) {
       setError('root', {

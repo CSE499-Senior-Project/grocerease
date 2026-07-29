@@ -1,8 +1,8 @@
 import { Metadata } from "next";
-// import { redirect } from "next/navigation";
 import SignInForm from "@/app/ui/signin/signin-form";
+import Footer from "@/components/Footer";
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'Sign In',
 };
 
 export default function SignInPage(){

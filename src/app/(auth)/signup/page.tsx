@@ -1,9 +1,8 @@
 import { Metadata } from "next";
-// import { redirect } from "next/navigation";
-import SignUpForm from "@/app/ui/register/signup-form";
+import SignUpForm from "@/app/ui/signup/signup-form";
 
 export const metadata: Metadata = {
-  title: 'Register',
+  title: 'Sign Up',
 };
 
 export default function SignUpPage(){

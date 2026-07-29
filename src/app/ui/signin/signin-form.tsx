@@ -13,11 +13,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { loginUser } from '@/actions/actions';
+import { signinUser } from '@/actions/actions';
 
 export default function SignInForm() {
   const searchParams = useSearchParams();
-  const isRegistered = searchParams.get('registered') === 'true';
+  const isSignedUp = searchParams.get('signup') === 'true';
 
   const {
     register,
@@ -29,7 +29,7 @@ export default function SignInForm() {
   });
 
   const onSubmit = async (data: SignInData) => {
-    const response = await loginUser(data);
+    const response = await signinUser(data);
 
     if (response?.error) {
       setError('root', {
@@ -47,16 +47,16 @@ export default function SignInForm() {
         </h1>
 
         {/* Conditionally render the success banner when the user just registered! */}
-        {isRegistered && (
+        {isSignedUp && (
           <div className='mb-6 rounded-md bg-green-50 p-4 border border-green-200'>
             <p className='text-sm font-medium text-green-800'>
-              Account successfully created! Please log in below.
+              Account successfully created! Please sign in below.
             </p>
           </div>
         )}
 
         <div className='flex-1'>
-          <h1 className='mb-6 text-2xl font-bold'>Please log in to continue</h1>
+          <h1 className='mb-6 text-2xl font-bold'>Please sign in to continue</h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             <FormInput
@@ -86,7 +86,7 @@ export default function SignInForm() {
             >
               {' '}
               {/*aria-disabled disabled>*/}
-              Log in <ArrowRightIcon className='h-5 w-5' />
+              Sign in <ArrowRightIcon className='h-5 w-5' />
             </button>
           </form>
 
@@ -103,7 +103,7 @@ export default function SignInForm() {
           <p className='mt-6 text-center text-sm font-semibold'>
             {"Don't have an account? "}
             <Link
-              href='/register'
+              href='/signup'
               className='font-bold text-brand-primary hover:underline'
             >
               Create one here
