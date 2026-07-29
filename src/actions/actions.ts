@@ -23,6 +23,8 @@ export async function signupUser(data: SignUpData) {
     if (error) {
       return { error: error.message };
     }
+
+    await supabase.auth.signOut();
   }
   catch (error) {
     return { error: "An unexpected error occurred. Please try again." };

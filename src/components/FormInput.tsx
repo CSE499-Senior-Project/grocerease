@@ -11,6 +11,8 @@ interface FormInputProps<T extends FieldValues> {
   placeholder?: string;
   autoComplete?: string;
   icon?: ElementType;
+  icon2?: ElementType;
+  onIcon2Click?: () => void;
 }
 
 export default function FormInput<T extends FieldValues>({ 
@@ -22,6 +24,8 @@ export default function FormInput<T extends FieldValues>({
   placeholder,
   autoComplete,
   icon: Icon,
+  icon2: Icon2,
+  onIcon2Click,
 }: FormInputProps<T>) {
 
   return (
@@ -43,6 +47,15 @@ export default function FormInput<T extends FieldValues>({
         {Icon && (
           <Icon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
         )}
+        <button
+          type="button"
+          onClick={onIcon2Click}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 focus:outline-none cursor-pointer"
+        >
+          {Icon2 && (
+            <Icon2 className="h-5 w-5" />
+          )}
+        </button>
       </div>
 
       {error && (

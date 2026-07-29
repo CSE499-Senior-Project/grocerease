@@ -3,6 +3,8 @@
 import {
   ArrowRightIcon,
   AtSymbolIcon,
+  EyeIcon,
+  EyeSlashIcon,
   KeyIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
@@ -11,11 +13,14 @@ import FormInput from '@/components/FormInput';
 import { useForm } from 'react-hook-form';
 import { SignUpSchema, type SignUpData } from '@/types/profile';
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { useActionState, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { signupUser } from '@/actions/actions';
 
 export default function SignUpForm() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -88,22 +93,26 @@ export default function SignUpForm() {
             <FormInput
               label='Password'
               name='password'
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               register={register}
               error={errors.password}
               placeholder='Enter a password'
               autoComplete='current-password'
               icon={KeyIcon}
+              icon2={showPassword ? EyeSlashIcon : EyeIcon}
+              onIcon2Click={() => setShowPassword(!showPassword)}
             />
             <FormInput
               label='Confirm Password'
               name='confirm_password'
-              type='password'
+              type={showConfirmPassword ? 'text' : 'password'}
               register={register}
               error={errors.confirm_password}
               placeholder='Confirm your password'
               autoComplete='current-password'
               icon={KeyIcon}
+              icon2={showConfirmPassword ? EyeSlashIcon : EyeIcon}
+              onIcon2Click={() => setShowConfirmPassword(!showConfirmPassword)}
             />
             <input type='hidden' name='redirectTo' />
             <button
