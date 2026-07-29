@@ -1,5 +1,6 @@
 import { UseFormRegister, FieldError, FieldValues, Path } from "react-hook-form";
 import { type ElementType } from "react";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 interface FormInputProps<T extends FieldValues> {
   label: string;
@@ -45,9 +46,12 @@ export default function FormInput<T extends FieldValues>({
       </div>
 
       {error && (
-        <p className="mt-1 text-sm text-red-500">
-          {error.message}
-        </p>
+        <div className="mt-1 flex items-center gap-1">
+          <ExclamationCircleIcon className='pointer-events-none h-[18px] text-red-700' />
+          <p className="text-sm text-red-700 font-semibold">
+            {error.message}
+          </p>
+        </div>
       )}
     </div>
   );

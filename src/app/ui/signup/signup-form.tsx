@@ -106,13 +106,12 @@ export default function SignUpForm() {
               autoComplete='current-password'
               icon={KeyIcon}
             />
-            <input type='hidden' name='redirectTo' /> {/*value={} /> */}
+            <input type='hidden' name='redirectTo' />
             <button
               type='submit'
               className='rounded-md border border-brand-primary py-[9px] text-brand-primary hover:bg-brand-primary bg-surface-bg hover:text-surface-bg font-bold mt-8 w-full flex items-center justify-center gap-2 cursor-pointer'
             >
               {' '}
-              {/*aria-disabled disabled>*/}
               Create your account <ArrowRightIcon className='h-5 w-5' />
             </button>
           </form>
