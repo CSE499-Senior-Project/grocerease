@@ -14,7 +14,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 // import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { signupUser } from '@/actions/actions';
-// import { useSearchParams } from 'next/navigation';
 
 export default function SignUpForm() {
   const {

@@ -58,6 +58,14 @@ export default function SignInForm() {
         <div className='flex-1'>
           <h1 className='mb-6 text-2xl font-bold'>Please sign in to continue</h1>
 
+          {errors.root && (
+            <div className='mb-6 rounded-md border border-red-200 bg-red-50 p-4'>
+              <p className='text-sm font-medium text-red-800'>
+                {errors.root.message}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             <FormInput
               label='Email'
