@@ -3,6 +3,8 @@
 import {
   ArrowRightIcon,
   AtSymbolIcon,
+  EyeIcon,
+  EyeSlashIcon,
   KeyIcon,
 } from '@heroicons/react/24/outline';
 import SignInButton from '@/components/SignInButton';
@@ -10,12 +12,13 @@ import FormInput from '@/components/FormInput';
 import { useForm } from 'react-hook-form';
 import { SignInSchema, type SignInData } from '@/types/profile';
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { useActionState, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { signinUser } from '@/actions/actions';
 
 export default function SignInForm() {
+  const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const isSignedUp = searchParams.get('signup') === 'true';
 
@@ -23,7 +26,7 @@ export default function SignInForm() {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignInData>({
     resolver: zodResolver(SignInSchema),
   });
@@ -41,7 +44,6 @@ export default function SignInForm() {
   return (
     <div className='space-y-3 rounded-2xl h-full'>
       <div className='glass-card p-4 md:p-4 h-full flex flex-col md:rounded-l-none md:rounded-r-2xl justify-center'>
-        {/* h1 will be removed once nav-bar is in place */}
         <h1 className='text-5xl font-bold tracking-tight text-slate-900 mb-6'>
           Welcome to <span className='text-brand-primary'>GrocerEase</span>
         </h1>
@@ -58,6 +60,14 @@ export default function SignInForm() {
         <div className='flex-1'>
           <h1 className='mb-6 text-2xl font-bold'>Please sign in to continue</h1>
 
+          {errors.root && (
+            <div className='mb-6 rounded-md border border-red-200 bg-red-50 p-4'>
+              <p className='text-sm font-medium text-red-800'>
+                {errors.root.message}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             <FormInput
               label='Email'
@@ -72,21 +82,36 @@ export default function SignInForm() {
             <FormInput
               label='Password'
               name='password'
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               register={register}
               error={errors.password}
               placeholder='Enter your password'
               autoComplete='current-password'
               icon={KeyIcon}
+              icon2={showPassword ? EyeSlashIcon : EyeIcon}
+              onIcon2Click={() => setShowPassword(!showPassword)}
             />
-            <input type='hidden' name='redirectTo' /> {/*value={} /> */}
+            <input type='hidden' name='redirectTo' />
             <button
               type='submit'
+              disabled={isSubmitting}
               className='rounded-md border border-brand-primary py-[9px] text-brand-primary hover:bg-brand-primary bg-surface-bg hover:text-surface-bg font-bold mt-8 w-full flex items-center justify-center gap-2 cursor-pointer'
             >
-              {' '}
-              {/*aria-disabled disabled>*/}
-              Sign in <ArrowRightIcon className='h-5 w-5' />
+              
+              {isSubmitting ? (
+                <>
+                  Signing in...
+                  <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRightIcon className='h-5 w-5' />
+                </>
+              )}
             </button>
           </form>
 

@@ -6,19 +6,24 @@ import { ShoppingCart, User } from "lucide-react";
 import SignOutButton from "../SignOutButton";
 import { useCart } from "@/context/CartContext";
 import Logo from "@/components/layout/Logo";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/client";
 
 // TODO: replace with real auth state once authentication is implemented.
-const isLoggedIn = true;
-// const supabase = await createClient();
+// const isSignedIn = true;
 
-// const user = await supabase.auth.getUser();
+export default function AppHeader({ initialIsSignedIn }: { initialIsSignedIn: boolean }) {
+  const [isSignedIn, setIsSignedIn] = useState(initialIsSignedIn);
+  const supabase = createClient();
 
-// if 
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsSignedIn(!!session);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase.auth]);
 
-// const isLoggedIn = 
-
-export default function AppHeader() {
   const { cartCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -95,7 +100,7 @@ export default function AppHeader() {
             )}
           </Link>
 
-          {isLoggedIn ? (
+          {isSignedIn ? (
             <div ref={menuRef} className="relative">
               <button
                 type="button"
@@ -122,7 +127,7 @@ export default function AppHeader() {
             </div>
           ) : (
             <Link
-              href="/login"
+              href="/signin"
               className="rounded-lg px-4 py-2 font-semibold text-brand-dark transition-colors hover:bg-brand-light"
             >
               Sign In
