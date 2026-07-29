@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import SignInForm from "@/app/ui/signin/signin-form";
+
 export const metadata: Metadata = {
   title: 'Sign In',
 };
