@@ -1,4 +1,4 @@
-import { signOut } from '@/app/auth/signout/route';
+import { signOut } from '@/actions/actions';
 
 export default function SignOutButton() {
   return (
