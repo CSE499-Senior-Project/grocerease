@@ -20,12 +20,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PROGRESS_UPDATE_PAT }}
         # (Removed ref: it now dynamically checks out the branch that triggered it)
 
       - name: Calculate Project Progress
         id: calc
         env:
-          GH_TOKEN: ${{ secrets.PROJECT_PAT }}
+          GH_TOKEN: ${{ secrets.PROGRESS_UPDATE_PAT }}
         run: |
           echo "Fetching project data from GitHub API..."
           
