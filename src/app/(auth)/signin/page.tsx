@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import SignInForm from "@/app/ui/signin/signin-form";
-import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: 'Sign In',
 };
