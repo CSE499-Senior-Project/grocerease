@@ -50,7 +50,7 @@ export default function FormInput<T extends FieldValues>({
         <button
           type="button"
           onClick={onIcon2Click}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 focus:outline-none cursor-pointer"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-green-800 hover:text-green-400 focus:outline-none cursor-pointer"
         >
           {Icon2 && (
             <Icon2 className="h-5 w-5" />
