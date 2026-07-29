@@ -30,6 +30,7 @@ export async function signupUser(data: SignUpData) {
     return { error: "An unexpected error occurred. Please try again." };
   }
 
+  revalidatePath('/', 'layout');
   redirect('/signin?signup=true');
 }
 
@@ -47,6 +48,7 @@ export async function signinUser(data: SignInData) {
     return { error: "An unexpected error occurred. Please try again." };
   }
 
+  revalidatePath('/', 'layout');
   redirect('/'); // once the user profile page is up, redirect to that page.
 }
 

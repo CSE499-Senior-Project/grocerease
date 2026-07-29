@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import AppHeader from "@/components/layout/AppHeader";
 import Footer from "@/components/Footer";
+import { createClient } from "@/utils/supabase/server";
 
 import { CartProvider } from "@/context/CartContext";
 
@@ -27,11 +28,15 @@ export const metadata: Metadata = {
   description: "GrocerEase Platform. Fresh groceries delivered directly to your door.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user} } = await supabase.auth.getUser();
+  const isSignedIn = !!user;
+  
   return (
     <html
       lang="en"
@@ -40,7 +45,10 @@ export default function RootLayout({
     >
       <CartProvider>
         <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary" suppressHydrationWarning>
-          <AppHeader />
+          <AppHeader 
+            key={isSignedIn ? 'signed-in' : 'signed-out'}
+            initialIsSignedIn={isSignedIn} 
+          />
           <main className="flex flex-col items-center justify-center m-4 flex-1">
             {children}
           </main>
