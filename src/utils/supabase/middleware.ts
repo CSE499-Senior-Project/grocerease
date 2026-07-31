@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-export const createClient = (request: NextRequest) => {
+export async function updateSession(request: NextRequest) {
   // Create an unmodified response
   let supabaseResponse = NextResponse.next({
     request: {
@@ -32,6 +32,23 @@ export const createClient = (request: NextRequest) => {
       },
     },
   );
+
+  const { data: { user }} = await supabase.auth.getUser();
+
+  const currentPath = request.nextUrl.pathname;
+
+  if (user && (currentPath.startsWith('/signin') || currentPath.startsWith('/signup'))) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/';
+
+    const redirectResponse = NextResponse.redirect(redirectUrl);
+
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+
+    return redirectResponse;
+  }
 
   return supabaseResponse
 };

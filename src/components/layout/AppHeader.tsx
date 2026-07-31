@@ -3,14 +3,27 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, User } from "lucide-react";
-
+import SignOutButton from "../SignOutButton";
 import { useCart } from "@/context/CartContext";
 import Logo from "@/components/layout/Logo";
+import { createClient } from "@/utils/supabase/client";
 
 // TODO: replace with real auth state once authentication is implemented.
-const isLoggedIn = false;
+// const isSignedIn = true;
 
-export default function AppHeader() {
+export default function AppHeader({ initialIsSignedIn }: { initialIsSignedIn: boolean }) {
+  const [isSignedIn, setIsSignedIn] = useState(initialIsSignedIn);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsSignedIn(!!session);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase.auth]);
+
   const { cartCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -46,7 +59,32 @@ export default function AppHeader() {
         className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8"
         aria-label="Main navigation"
       >
-        <Logo />
+        <div className="flex items-center gap-10">
+          <Logo />
+
+          <div className="hidden items-center gap-8 md:flex">
+            <Link
+              href="/#categories"
+              className="font-medium text-slate-700 transition-colors hover:text-brand-primary"
+            >
+              Categories
+            </Link>
+
+            <Link
+              href="/#benefits"
+              className="font-medium text-slate-700 transition-colors hover:text-brand-primary"
+            >
+              Why GrocerEase
+            </Link>
+
+            <Link
+              href="/merchant"
+              className="font-medium text-slate-700 transition-colors hover:text-brand-primary"
+            >
+              For Merchants
+            </Link>
+          </div>
+        </div>
 
         <div className="flex items-center gap-5">
           <Link
@@ -62,7 +100,7 @@ export default function AppHeader() {
             )}
           </Link>
 
-          {isLoggedIn ? (
+          {isSignedIn ? (
             <div ref={menuRef} className="relative">
               <button
                 type="button"
@@ -83,24 +121,25 @@ export default function AppHeader() {
                   >
                     Account
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="block w-full px-4 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-brand-light hover:text-brand-primary"
-                  >
-                    Sign Out
-                  </button>
+                  <SignOutButton />
                 </div>
               )}
             </div>
           ) : (
             <Link
-              href="/login"
-              className="rounded-lg bg-brand-primary px-4 py-2 font-semibold text-white transition-colors hover:bg-brand-dark"
+              href="/signin"
+              className="rounded-lg px-4 py-2 font-semibold text-brand-dark transition-colors hover:bg-brand-light"
             >
               Sign In
             </Link>
           )}
+
+          <Link
+            href="/products"
+            className="rounded-lg bg-brand-primary px-5 py-2.5 font-semibold text-white transition-colors hover:bg-brand-dark"
+          >
+            Start Shopping
+          </Link>
         </div>
       </nav>
     </header>
