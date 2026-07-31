@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-
 import type { Product } from "@/types/product";
 import { createClient } from "@/utils/supabase/server";
 
