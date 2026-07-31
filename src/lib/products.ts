@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-
 import type { Product } from "@/types/product";
 import { createClient } from "@/utils/supabase/server";
 
@@ -176,8 +174,7 @@ export async function getFeaturedProducts(
   limit = 8,
 ): Promise<ProductsResult> {
   try {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("products")
@@ -250,8 +247,7 @@ export async function getProducts(
   const to = from + safePageSize - 1;
 
   try {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
+    const supabase = await createClient();
 
     const selectedColumns = category
       ? PRODUCT_COLUMNS_WITH_CATEGORY_FILTER
@@ -348,8 +344,7 @@ export async function getProductById(
   productId: string,
 ): Promise<ProductDetailsResult> {
   try {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("products")
@@ -403,8 +398,7 @@ export async function getProductById(
  */
 export async function getCategories(): Promise<CategoriesResult> {
   try {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("categories")
