@@ -36,7 +36,17 @@ export default async function RootLayout({
   const supabase = await createClient();
   const { data: { user} } = await supabase.auth.getUser();
   const isSignedIn = !!user;
-  
+
+  let firstName: string | undefined;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('first_name')
+      .eq('id', user.id)
+      .single();
+    firstName = profile?.first_name;
+  }
+
   return (
     <html
       lang="en"
@@ -45,11 +55,12 @@ export default async function RootLayout({
     >
       <CartProvider>
         <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary" suppressHydrationWarning>
-          <AppHeader 
+          <AppHeader
             key={isSignedIn ? 'signed-in' : 'signed-out'}
-            initialIsSignedIn={isSignedIn} 
+            initialIsSignedIn={isSignedIn}
+            firstName={firstName}
           />
-          <main className="flex flex-col items-center justify-center m-4 flex-1">
+          <main className="flex flex-col items-center justify-center mx-4 flex-1">
             {children}
           </main>
           <Footer />
