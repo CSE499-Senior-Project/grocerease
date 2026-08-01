@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Roboto_Mono } from "next/font/google";
 import AppHeader from "@/components/layout/AppHeader";
 import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/server";
@@ -23,9 +23,10 @@ const robotoMono = Roboto_Mono({
 export const metadata: Metadata = {
   title: {
     template: "%s | GrocerEase",
-    default: "GrocerEase"
+    default: "GrocerEase",
   },
-  description: "GrocerEase Platform. Fresh groceries delivered directly to your door.",
+  description:
+    "GrocerEase Platform. Fresh groceries delivered directly to your door.",
 };
 
 export default async function RootLayout({
@@ -50,7 +51,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      data-scroll-bevahior="smooth"
+      data-scroll-behavior="smooth"
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <CartProvider>
