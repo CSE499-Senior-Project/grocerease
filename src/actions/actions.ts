@@ -2,7 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { type SignInData, type SignUpData } from "@/types/profile";
+import {
+  type SignInData,
+  type SignUpData,
+  type ProfileUpdateData,
+  type ChangePasswordData,
+  ProfileUpdateSchema,
+  ChangePasswordSchema,
+} from "@/types/profile";
 import { createClient } from "@/utils/supabase/server";
 
 export async function signupUser(data: SignUpData) {
@@ -58,4 +65,76 @@ export async function signOut() {
 
   revalidatePath('/', 'layout');
   redirect('/signin');
+}
+
+export async function updateProfile(data: ProfileUpdateData) {
+  const parsed = ProfileUpdateSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "Not signed in." };
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        first_name: parsed.data.first_name,
+        last_name: parsed.data.last_name,
+        phone_number: parsed.data.phone_number || null,
+        preferred_contact_method: parsed.data.preferred_contact_method,
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      return { error: error.message };
+    }
+  }
+  catch (error) {
+    return { error: "An unexpected error occurred. Please try again." };
+  }
+
+  revalidatePath('/', 'layout');
+  return { success: true };
+}
+
+export async function changePassword(data: ChangePasswordData) {
+  const parsed = ChangePasswordSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user?.email) {
+      return { error: "Not signed in." };
+    }
+
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: parsed.data.current_password,
+    });
+
+    if (verifyError) {
+      return { error: "Current password is incorrect.", field: "current_password" as const };
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: parsed.data.new_password });
+
+    if (error) {
+      return { error: error.message };
+    }
+  }
+  catch (error) {
+    return { error: "An unexpected error occurred. Please try again." };
+  }
+
+  return { success: true };
 }

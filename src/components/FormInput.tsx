@@ -13,9 +13,10 @@ interface FormInputProps<T extends FieldValues> {
   icon?: ElementType;
   icon2?: ElementType;
   onIcon2Click?: () => void;
+  uppercase?: boolean;
 }
 
-export default function FormInput<T extends FieldValues>({ 
+export default function FormInput<T extends FieldValues>({
   label,
   name,
   register,
@@ -26,11 +27,17 @@ export default function FormInput<T extends FieldValues>({
   icon: Icon,
   icon2: Icon2,
   onIcon2Click,
+  uppercase = true,
 }: FormInputProps<T>) {
 
   return (
     <div>
-      <label className="mb-3 mt-5 block text-s font-semibold uppercase tracking-wider text-txt-primary" htmlFor={name}>
+      <label
+        className={`mb-3 mt-5 block text-txt-primary ${
+          uppercase ? 'text-s font-semibold uppercase tracking-wider' : 'font-bold'
+        }`}
+        htmlFor={name}
+      >
         {label}
       </label>
 
