@@ -1,38 +1,61 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Roboto_Mono } from "next/font/google";
+import AppHeader from "@/components/layout/AppHeader";
+import Footer from "@/components/Footer";
+import { createClient } from "@/utils/supabase/server";
+
+import { CartProvider } from "@/context/CartContext";
+
 import "./globals.css";
 
-// The equivalent of system-ui for headings
-const inter = Inter({
-subsets: ["latin"],
-variable: '--font-inter',
-display: 'swap',
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta-sans",
+  display: "swap",
 });
 
-// The polished equivalent of Courier/monospace for body/prices
 const robotoMono = Roboto_Mono({
-subsets: ["latin"],
-variable: '--font-roboto-mono',
-display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-roboto-mono",
+  display: "swap",
 });
 
-// This sets the HTML  meta tags for your app
 export const metadata: Metadata = {
-  title: "GrocerEase Platform",
-  description: "GrocerEase Platform. Fresh groceries delivered directly to your door.",
+  title: {
+    template: "%s | GrocerEase",
+    default: "GrocerEase",
+  },
+  description:
+    "GrocerEase Platform. Fresh groceries delivered directly to your door.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-  }: Readonly<{
+}: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user} } = await supabase.auth.getUser();
+  const isSignedIn = !!user;
+  
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${robotoMono.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+      className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-surface-background text-slate-900 ">{children}</body>
+      <CartProvider>
+        <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary" suppressHydrationWarning>
+          <AppHeader 
+            key={isSignedIn ? 'signed-in' : 'signed-out'}
+            initialIsSignedIn={isSignedIn} 
+          />
+          <main className="flex flex-col items-center justify-center m-4 flex-1">
+            {children}
+          </main>
+          <Footer />
+        </body>
+      </CartProvider>
     </html>
   );
 }
