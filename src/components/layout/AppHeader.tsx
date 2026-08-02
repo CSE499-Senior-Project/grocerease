@@ -159,6 +159,25 @@ export default function AppHeader({
           >
             Start Shopping
           </Link>
+
+          <Link
+            href="/cart"
+            aria-label={`Shopping cart with ${cartCount} ${
+              cartCount === 1 ? "item" : "items"
+            }`}
+            className="relative text-slate-700 transition-colors hover:text-brand-primary"
+          >
+            <ShoppingCart
+              aria-hidden="true"
+              className="h-6 w-6"
+            />
+
+            {cartCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-brand-primary px-1 text-xs font-bold text-white">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </Link>
         </div>
       </nav>
     </header>
