@@ -34,7 +34,6 @@ export type ProductSort =
 export type GetProductsOptions = {
   search?: string;
   category?: string;
-  inStockOnly?: boolean;
   sort?: ProductSort;
   page?: number;
   pageSize?: number;
@@ -221,7 +220,7 @@ export async function getFeaturedProducts(
  * Supports:
  * - search by product name
  * - category filtering
- * - in-stock filtering
+ * - automatically excludes out-of-stock products
  * - sorting
  * - pagination
  */
@@ -231,7 +230,6 @@ export async function getProducts(
   const {
     search = "",
     category = "",
-    inStockOnly = false,
     sort = "newest",
     page = 1,
     pageSize = 12,
@@ -258,7 +256,8 @@ export async function getProducts(
       .select(selectedColumns, {
         count: "exact",
       })
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .gt("stock_quantity", 0);
 
     const trimmedSearch = search.trim();
     const trimmedCategory = category.trim();
@@ -275,10 +274,6 @@ export async function getProducts(
         "categories.name",
         trimmedCategory,
       );
-    }
-
-    if (inStockOnly) {
-      query = query.gt("stock_quantity", 0);
     }
 
     query = applySort(query, sort);
