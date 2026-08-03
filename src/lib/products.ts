@@ -17,6 +17,7 @@ type ProductRow = {
   stock_quantity: number;
   is_active: boolean;
   categories: CategoryRow | CategoryRow[] | null;
+  created_at: string
 };
 
 type CategoryDatabaseRow = {
@@ -74,7 +75,8 @@ const PRODUCT_COLUMNS = `
   categories (
     id,
     name
-  )
+  ),
+  created_at
 `;
 
 const PRODUCT_COLUMNS_WITH_CATEGORY_FILTER = `
@@ -90,7 +92,8 @@ const PRODUCT_COLUMNS_WITH_CATEGORY_FILTER = `
   categories!inner (
     id,
     name
-  )
+  ),
+  created_at
 `;
 
 function getCategory(
@@ -133,6 +136,7 @@ function mapProductRow(product: ProductRow): Product {
     unit: product.unit,
     stockQuantity: product.stock_quantity,
     inStock: product.stock_quantity > 0,
+    createdAt: product.created_at
   };
 }
 

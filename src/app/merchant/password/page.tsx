@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import ChangePasswordForm from "@/app/ui/account/change-password-form";
+import ComingSoon from "@/app/ui/account/coming-soon";
 
 export const metadata: Metadata = {
   title: "Password",
 };
 
-export default function PasswordPage() {
-  return <ChangePasswordForm />;
+export default function WalletPage() {
+  return <ComingSoon title="Password" />;
 }

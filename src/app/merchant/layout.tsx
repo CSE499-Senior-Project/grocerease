@@ -1,4 +1,4 @@
-import { getAuthenticatedProfile, getProfile } from "@/lib/profile";
+import { getProfile } from "@/lib/profile";
 import MerchantSidebar from "@/app/ui/merchant/merchant-sidebar";
 
 export default async function AccountLayout({

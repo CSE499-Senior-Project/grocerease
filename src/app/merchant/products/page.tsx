@@ -6,7 +6,7 @@ import AccountCard from "@/app/ui/account/account-card";
 import PageTitle from "@/app/ui/account/page-title";
 
 export const metadata: Metadata = {
-  title: "Account Details",
+  title: "Products",
 };
 
 const contactMethodLabels = {
@@ -22,7 +22,7 @@ export default async function AccountDetailsPage() {
       <PageTitle
         action={
           <Link
-            href="/account/profile/edit"
+            href="/merchant/product/edit" // change this to /[id]/edit
             className="shrink-0 rounded-full border border-brand-primary px-4 py-1 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-primary hover:text-white"
           >
             Edit

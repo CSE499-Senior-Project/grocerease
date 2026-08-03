@@ -13,7 +13,7 @@ import SignOutButton from '@/components/SignOutButton';
 
 const navItems = [
   { href: '/merchant/orders', label: 'Orders Queue', icon: ArchiveBoxIcon },
-  { href: '/merchant/profile', label: 'Account Details', icon: IdentificationIcon }, // change to something
+  { href: '/merchant/products', label: 'Products', icon: IdentificationIcon },
   { href: '/merchant/password', label: 'Password', icon: KeyIcon }, // change to something
   { href: '/merchant/address', label: 'Store Address', icon: MapPinIcon },
 ];

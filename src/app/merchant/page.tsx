@@ -7,7 +7,7 @@ export default async function MerchantPage() {
   const isAdmin = profile?.role === 'merchant' || profile?.role === 'admin';
 
   if (isAdmin) {
-    redirect("/merchant/profile");
+    redirect("/merchant/orders");
   }
 
   return (

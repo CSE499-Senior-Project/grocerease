@@ -1,4 +1,4 @@
-export default function AccountCard({
+export default function OrderCard({
   children,
   className = '',
 }: {
