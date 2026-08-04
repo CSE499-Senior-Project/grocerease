@@ -3,8 +3,6 @@
 import { useForm } from "react-hook-form";
 import { updateOrderStatus } from "@/actions/merchant";
 
-
-
 const STATUS_STEPS = ['pending', 'shopping', 'out for delivery', 'delivered'] as const;
 type OrderStatus = typeof STATUS_STEPS[number];
 
