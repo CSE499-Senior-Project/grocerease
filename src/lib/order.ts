@@ -5,29 +5,33 @@ import { createClient } from '@/utils/supabase/server';
 export const getOrders = cache(async (): Promise<MerchantOrder[]> => {
   const supabase = await createClient();
 
-  const { data: orders } = await supabase
-    .from('orders')
-    .select(`
-      *, 
-      profiles (
+  const { data: orders, error } = await supabase
+  .from('orders')
+  .select(`
+    *, 
+    profiles (
+      id,
+      email,
+      first_name,
+      last_name,
+      phone_number
+    ),
+    order_items (
+      id,
+      quantity,
+      price_at_time,
+      products (
         id,
-        email,
-        first_name,
-        last_name
-      ),
-      order_items (
-        id,
-        quantity,
-        price_at_time,
-        products (
-          id,
-          name,
-          image_url,
-          unit
-        )
+        name,
+        image_url,
+        unit
       )
-    `)
-    // in the future we could add a `.eq()` || `.in()` || `.neq()` to display only the active orders.
-    .order("created_at", { ascending: false})
+    )
+  `)
+  // in the future we could add a `.eq()` || `.in()` || `.neq()` to display only the active orders.
+  .order("created_at", { ascending: false});
+
+  if (error) console.error("Supabase Orders Error:", error);
+
   return orders ?? [];
 })
