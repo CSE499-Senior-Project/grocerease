@@ -28,7 +28,7 @@ export default async function OrdersPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-bold text-slate-900">{order.profiles?.first_name}</h3>
-                  <p className="text-slate-700">{order.order_items.products.product_name}</p>
+                  {/* <p className="text-slate-700">{order.order_items.products.product_name}</p> */}
                   <p className="text-slate-700">{order.delivery_address}</p>
                 </div>
                 {/* <div className="flex shrink-0 gap-2">
