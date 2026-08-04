@@ -1,17 +1,9 @@
 'use server';
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 
-export async function updateOrderStatus(formData: FormData) {
-  const orderId = formData.get("orderId") as string;
-  const status = formData.get("status") as string;
-
-  if (!orderId || !status) {
-    return { error: "Invalid order data." };
-  }
-
+export async function updateOrderStatus(orderId: string, status: string) {
   try {
     const supabase = await createClient();
 
@@ -36,6 +28,7 @@ export async function updateOrderStatus(formData: FormData) {
   }
 
   revalidatePath("/merchant/orders");
-
   revalidatePath("/account/orders");
+
+  return { succes: true };
 }

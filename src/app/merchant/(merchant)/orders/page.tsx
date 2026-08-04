@@ -3,6 +3,7 @@ import OrderCard from "@/app/ui/merchant/order-card";
 import Image from "next/image";
 import PageTitle from "@/app/ui/account/page-title";
 import { getOrders } from "@/lib/order";
+import OrderStatusStepper from "@/app/ui/merchant/order-status-stepper";
 
 export const metadata: Metadata = {
   title: "Orders & Purchases",
@@ -30,8 +31,6 @@ function formatDate(dateString: string) {
     minute: "2-digit",
   }).format(new Date(dateString));
 }
-
-const STATUS_STEPS = ['pending', 'shopping', 'out for delivery', 'delivered'] as const;
 
 export default async function OrdersPage() {
   const orders = await getOrders();
@@ -154,54 +153,17 @@ export default async function OrdersPage() {
               </div>
 
               <div className="flex flex-col-reverse items-start justify-between gap-6 border-t border-slate-200 bg-slate-50 p-4 xl:flex-row xl:items-center md:p-6">
-                
                 <div className="flex w-full flex-col gap-3">
                   {order.updated_at && order.updated_at !== order.created_at && (
                     <span className="text-xs font-medium text-slate-500">
                       Status last updated: <span className="font-semibold text-slate-700">{formatDate(order.updated_at)}</span>
                     </span>
                   )}
-
-                  <form className="flex w-full items-center gap-2 overflow-x-auto pb-2 xl:pb-0 scrollbar-hide">
-                    <input type="hidden" name="orderId" value={order.id} />
-                    
-                    {STATUS_STEPS.map((step, index) => {
-                      const currentIdx = STATUS_STEPS.indexOf(order.status as any);
-                      const isPast = index < currentIdx;
-                      const isCurrent = index === currentIdx;
-                      
-                      let buttonClasses = "shrink-0 rounded-full border-2 px-4 py-2 text-sm font-bold capitalize transition-all ";
-                      
-                      if (isCurrent) {
-                        buttonClasses += "border-brand-primary bg-brand-primary text-white shadow-md";
-                      } else if (isPast) {
-                        buttonClasses += "border-brand-light bg-brand-light text-brand-dark hover:bg-brand-primary hover:text-white hover:border-brand-primary cursor-pointer";
-                      } else {
-                        buttonClasses += "border-slate-200 bg-white text-slate-400 hover:border-brand-primary hover:text-brand-primary cursor-pointer";
-                      }
-
-                      return (
-                        <div key={step} className="flex items-center gap-2">
-                          <button
-                            type="submit"
-                            name="status"
-                            value={step}
-                            disabled={isCurrent}
-                            className={buttonClasses}
-                            aria-label={`Update status to ${step}`}
-                          >
-                            {step}
-                          </button>
-                          
-                          {index < STATUS_STEPS.length - 1 && (
-                            <div className={`h-0.5 w-4 sm:w-6 rounded-full ${isPast ? 'bg-brand-primary' : 'bg-slate-200'}`} />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </form>
+                  <OrderStatusStepper 
+                    orderId={order.id} 
+                    currentStatus={order.status as any} 
+                  />
                 </div>
-
                 <div className="flex w-full shrink-0 flex-row items-center justify-between xl:w-auto xl:flex-col xl:justify-end gap-1">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Total Amount
