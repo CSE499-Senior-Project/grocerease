@@ -12,6 +12,7 @@ export const featuredProducts: Product[] = [
     unit: "1 kg",
     stockQuantity: 10,
     inStock: true,
+    createdAt: '2026-07-16 00:57:06.500559+00',
   },
   {
     id: "mock-milk",
@@ -24,6 +25,7 @@ export const featuredProducts: Product[] = [
     unit: "1 litre",
     stockQuantity: 10,
     inStock: true,
+    createdAt: '2026-07-16 00:57:06.500559+00',
   },
   {
     id: "mock-bread",
@@ -36,6 +38,7 @@ export const featuredProducts: Product[] = [
     unit: "1 loaf",
     stockQuantity: 10,
     inStock: true,
+    createdAt: '2026-07-16 00:57:06.500559+00',
   },
   {
     id: "mock-chicken",
@@ -48,5 +51,6 @@ export const featuredProducts: Product[] = [
     unit: "1 kg",
     stockQuantity: 10,
     inStock: true,
+    createdAt: '2026-07-16 00:57:06.500559+00',
   },
 ];

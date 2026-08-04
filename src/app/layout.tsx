@@ -61,7 +61,7 @@ export default async function RootLayout({
             initialIsSignedIn={isSignedIn}
             firstName={firstName}
           />
-          <main className="flex flex-col items-center justify-center mx-4 flex-1">
+          <main className="flex flex-col items-center justify-center flex-1">
             {children}
           </main>
           <Footer />
