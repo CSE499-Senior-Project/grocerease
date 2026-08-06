@@ -3,6 +3,7 @@ import PageTitle from "@/app/ui/account/page-title";
 import OrderCard from "@/app/ui/merchant/order-card";
 import { getProducts } from "@/lib/merchant-products";
 import Link from "next/link";
+import ProductTable from "@/app/ui/merchant/product-table";
 
 export const metadata: Metadata = {
   title: "Product Catalog",
@@ -17,7 +18,7 @@ export default async function AccountDetailsPage() {
       <PageTitle
         action={
           <Link
-            href="/merchant/product/add" // change this to /[id]/edit
+            href="/merchant/product-catalog/add"
             className="shrink-0 rounded-full border border-brand-primary px-4 py-1 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-primary hover:text-white"
           >
             Add Product
@@ -34,7 +35,11 @@ export default async function AccountDetailsPage() {
           </p>
         </OrderCard>
       ) : (
-        <div className="space-y-8"></div>
+        <div className="space-y-8">
+          <ProductTable 
+            products={products}
+          />
+        </div>
       )}
     </>
   );
