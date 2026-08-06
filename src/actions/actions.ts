@@ -10,6 +10,7 @@ import {
   ProfileUpdateSchema,
   ChangePasswordSchema,
 } from "@/types/profile";
+import { type AddProductData } from "@/types/merchant-products";
 import { createClient } from "@/utils/supabase/server";
 
 export async function signupUser(data: SignUpData) {
