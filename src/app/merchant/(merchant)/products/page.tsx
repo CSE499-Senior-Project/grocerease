@@ -4,6 +4,7 @@ import { getAuthenticatedProfile } from "@/lib/profile";
 import DetailRow from "@/app/ui/account/detail-row";
 import AccountCard from "@/app/ui/account/account-card";
 import PageTitle from "@/app/ui/account/page-title";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Products",
