@@ -28,6 +28,7 @@ export default function OrderedItems({ items }: OrderedItemsProp) {
                   }
                   alt={item.products?.name ?? "Product"}
                   fill
+                  sizes="48px"
                   className="object-cover"
                 />
               </div>
