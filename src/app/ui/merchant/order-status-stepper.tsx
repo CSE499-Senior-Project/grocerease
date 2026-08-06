@@ -62,7 +62,7 @@ export default function OrderStatusStepper({ orderId, currentStatus }: OrderStat
           }
 
           return (
-            <div key={step} className="flex items-center gap-2">
+            <div key={step} className="flex shrink-0 items-center gap-2">
               <button
                 type="submit"
                 onClick={() => setValue("status", step)}
