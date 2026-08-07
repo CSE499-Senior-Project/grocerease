@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Roboto_Mono } from "next/font/google";
+import {
+  Plus_Jakarta_Sans,
+  Roboto_Mono,
+} from "next/font/google";
+
 import AppHeader from "@/components/layout/AppHeader";
 import Footer from "@/components/Footer";
-import { createClient } from "@/utils/supabase/server";
-
 import { CartProvider } from "@/context/CartContext";
+import { createClient } from "@/utils/supabase/server";
 
 import "./globals.css";
 
@@ -35,16 +38,22 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const { data: { user} } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const isSignedIn = !!user;
 
   let firstName: string | undefined;
+
   if (user) {
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('first_name')
-      .eq('id', user.id)
+      .from("profiles")
+      .select("first_name")
+      .eq("id", user.id)
       .single();
+
     firstName = profile?.first_name;
   }
 
@@ -54,16 +63,25 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
       className={`${plusJakartaSans.variable} ${robotoMono.variable} h-full antialiased`}
     >
-      <CartProvider>
-        <body className="min-h-full flex flex-col font-sans bg-surface-bg !text-txt-primary" suppressHydrationWarning>
+      <CartProvider initialUserId={user?.id ?? null}>
+        <body
+          className="flex min-h-full flex-col bg-surface-bg font-sans !text-txt-primary"
+          suppressHydrationWarning
+        >
           <AppHeader
-            key={isSignedIn ? 'signed-in' : 'signed-out'}
+            key={
+              isSignedIn
+                ? "signed-in"
+                : "signed-out"
+            }
             initialIsSignedIn={isSignedIn}
             firstName={firstName}
           />
-          <main className="flex flex-col items-center justify-center flex-1">
+
+          <main className="m-4 flex flex-1 flex-col items-center justify-center">
             {children}
           </main>
+
           <Footer />
         </body>
       </CartProvider>
