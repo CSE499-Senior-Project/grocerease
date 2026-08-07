@@ -14,7 +14,7 @@ export default async function AccountLayout({
   }).format(new Date(profile.created_at));
 
   return (
-    <section className="mb-auto w-full max-w-7xl mx-auto bg-white py-20 sm:py-24">
+    <section className="mb-auto w-full max-w-7xl mx-auto bg-white pt-11 pb-20 sm:pb-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
           <AccountSidebar firstName={profile.first_name} memberSince={memberSince} />
