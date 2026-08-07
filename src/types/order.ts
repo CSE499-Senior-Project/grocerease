@@ -43,3 +43,7 @@ export type MerchantOrder = Order & {
   profiles: OrderProfile | null;
   order_items: OrderItemWithProduct[];
 };
+
+export type CustomerOrder = Order & {
+  order_items: OrderItemWithProduct[];
+};
