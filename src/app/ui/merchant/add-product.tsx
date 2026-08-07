@@ -1,57 +1,99 @@
 'use client';
 
 import {
+  AdjustmentsHorizontalIcon,
   ArrowRightIcon,
-  AtSymbolIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  KeyIcon,
-  UserCircleIcon,
+  CakeIcon,
+  CurrencyDollarIcon,
+  PencilSquareIcon,
+  PlusCircleIcon,
+  Square2StackIcon,
+  ExclamationCircleIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
-import SignInButton from '@/components/SignInButton';
 import FormInput from '@/components/FormInput';
 import { useForm } from 'react-hook-form';
-import { SignUpSchema, type SignUpData } from '@/types/profile';
+import { AddProductSchema, type AddProductData } from '@/types/merchant-products';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import Link from 'next/link';
-import { signupUser } from '@/actions/actions';
+import { useRouter } from 'next/navigation';
+import { addProduct } from '@/actions/actions';
+import { createClient } from '@/utils/supabase/client';
+import { optional } from 'zod';
 
-export default function SignUpForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+interface Category {
+  id: string;
+  name: string;
+}
+
+export default function AddProductForm({ categories }: { categories: Category[] }) {
+  const router = useRouter();
+  const supabase = createClient();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<SignUpData>({
-    resolver: zodResolver(SignUpSchema),
+  } = useForm<AddProductData>({
+    resolver: zodResolver(AddProductSchema),
+    defaultValues: {
+      is_active: true,
+      category_id: "",
+    },
   });
 
-  const onSubmit = async (data: SignUpData) => {
-    const response = await signupUser(data);
+  const onSubmit = async (data: AddProductData) => {
+    setIsUploading(true);
+    let finalImageUrl = data.image_url || null;
 
-    if (response?.error) {
-      setError('root', {
-        message: response.error,
-      });
+    try {
+      if (selectedFile) {
+        const fileExt = selectedFile.name.split('.').pop();
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(fileName, selectedFile, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (uploadError) throw new Error("Failed to upload image.");
+
+        const { data: publicUrlData } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        finalImageUrl = publicUrlData.publicUrl;
+      }
+
+      const finalProductData = {
+        ...data,
+        image_url: finalImageUrl || "",
+      };
+
+      const response = await addProduct(finalProductData);
+
+      if (response?.error) {
+        setError('root', { message: response.error });
+        return;
+      }
+
+      router.push('/merchant/product-catalog');
+    } catch (error) {
+      setError('root', { message: 'An unexpected error occurred while saving.' });
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
     <div className='space-y-3 rounded-2xl h-full'>
-      <div className='glass-card p-4 md:p-4 h-full flex flex-col md:rounded-l-none md:rounded-r-2xl justify-center'>
-        {/* h1 will be removed once nav-bar is in place */}
-        <h1 className='text-5xl font-bold tracking-tight text-slate-900 mb-6'>
-          Welcome to <span className='text-brand-primary'>GrocerEase</span>
-        </h1>
-        <div className='flex-1'>
-          <h1 className='mb-6 text-2xl font-bold'>
-            Please create an account to continue
-          </h1>
-
+      <div className='glass-card p-4 md:p-6 h-full flex flex-col md:rounded-l-none md:rounded-r-2xl justify-center'>
+        <div className='flex-1 max-w-3xl mx-auto w-full'>
           {/* Conditionally render the Server Error banner */}
           {errors.root && (
             <div className='mb-6 rounded-md bg-red-50 p-4 border border-red-200'>
@@ -61,68 +103,131 @@ export default function SignUpForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full space-y-2'>
             <FormInput
-              label='First Name'
-              name='first_name'
+              label='Product Name'
+              name='name'
               register={register}
-              error={errors.first_name}
-              placeholder='Enter your first name'
-              autoComplete='given-name'
-              icon={UserCircleIcon}
+              error={errors.name}
+              placeholder='e.g., Whole Wheat Bread'
+              icon={Square2StackIcon}
             />
+
+            <div>
+              <label
+                className='mb-3 mt-5 block text-txt-primary text-sm font-semibold uppercase tracking-wider'
+                htmlFor='category_id'
+              >
+                Category
+              </label>
+              <div className='relative'>
+                <select
+                  id='category_id'
+                  {...register("category_id")}
+                  aria-invalid={!!errors.category_id}
+                  className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm focus:outline-brand-primary bg-surface-bg focus:text-txt-primary appearance-none cursor-pointer' 
+                >
+                  <option value="" disabled>Select a category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                <CakeIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
+              </div>
+              {errors.category_id && <p className="mt-1 text-sm text-red-700 font-semibold">{errors.category_id.message}</p>}
+            </div>
+
             <FormInput
-              label='Last Name'
-              name='last_name'
+              label='Description'
+              name='description'
               register={register}
-              error={errors.last_name}
-              placeholder='Enter your last name'
-              autoComplete='family-name'
-              icon={UserCircleIcon}
+              error={errors.description}
+              placeholder='Enter a short description'
+              icon={PencilSquareIcon}
             />
+
             <FormInput
-              label='Email'
-              name='email'
-              type='email'
+              label='Unit (e.g., 1 loaf, 16 oz)'
+              name='unit'
               register={register}
-              error={errors.email}
-              placeholder='Enter your email address'
-              autoComplete='email'
-              icon={AtSymbolIcon}
+              error={errors.unit}
+              placeholder='e.g., 1 loaf'
+              icon={Square2StackIcon}
             />
-            <FormInput
-              label='Password'
-              name='password'
-              type={showPassword ? 'text' : 'password'}
-              register={register}
-              error={errors.password}
-              placeholder='Enter a password'
-              autoComplete='current-password'
-              icon={KeyIcon}
-              icon2={showPassword ? EyeSlashIcon : EyeIcon}
-              onIcon2Click={() => setShowPassword(!showPassword)}
-            />
-            <FormInput
-              label='Confirm Password'
-              name='confirm_password'
-              type={showConfirmPassword ? 'text' : 'password'}
-              register={register}
-              error={errors.confirm_password}
-              placeholder='Confirm your password'
-              autoComplete='current-password'
-              icon={KeyIcon}
-              icon2={showConfirmPassword ? EyeSlashIcon : EyeIcon}
-              onIcon2Click={() => setShowConfirmPassword(!showConfirmPassword)}
-            />
-            <input type='hidden' name='redirectTo' />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="price" className="mb-3 mt-5 block text-txt-primary text-sm font-semibold uppercase tracking-wider">
+                  Price
+                </label>
+                <div className="relative">
+                  <input 
+                  id='price'
+                  type="number" 
+                  step='0.01'
+                  placeholder='0.00'
+                  {...register("price", { valueAsNumber: true })}
+                  className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-4 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary'
+                  />
+                  <CurrencyDollarIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
+                </div>
+                {errors.price && <p className="mt-1 text-sm text-red-700 font-semibold">{errors.price.message}</p>}
+              </div>
+
+              <div>
+                <label className='mb-3 mt-5 block text-txt-primary text-sm font-semibold uppercase tracking-wider' htmlFor='stock_quantity'>
+                  Stock Quantity
+                </label>
+                <div className='relative'>
+                  <input
+                    id='stock_quantity'
+                    type='number'
+                    placeholder='0'
+                    {...register("stock_quantity", { valueAsNumber: true })}
+                    className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-4 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary'
+                  />
+                  <PlusCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
+                </div>
+                {errors.stock_quantity && <p className="mt-1 text-sm text-red-700 font-semibold">{errors.stock_quantity.message}</p>}
+              </div>
+            </div>
+            
+            <div>
+              <label className='mb-3 mt-5 block text-txt-primary text-sm font-semibold uppercase tracking-wider' htmlFor='image_upload'>
+                Product Image
+              </label>
+              <div className='relative flex items-center w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-4 text-sm bg-surface-bg focus-within:outline-brand-primary'>
+                <PhotoIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800' />
+                <input
+                  id='image_upload'
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setSelectedFile(e.target.files[0]);
+                    }
+                  }}
+                  className="w-full text-slate-700 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-light file:text-brand-dark hover:file:bg-brand-primary hover:file:text-white transition-colors cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div className="pt-6 pb-2">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" {...register('is_active')} />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary"></div>
+                <span className="ml-3 text-sm font-bold text-slate-700 uppercase tracking-wider">Product is Active</span>
+              </label>
+            </div>
+
             <button
               type='submit'
-              disabled={isSubmitting}
-              className='rounded-md border border-brand-primary py-[9px] text-brand-primary hover:bg-brand-primary bg-surface-bg hover:text-surface-bg font-bold mt-8 w-full flex items-center justify-center gap-2 cursor-pointer'
+              disabled={isSubmitting || isUploading}
+              className='rounded-md border border-brand-primary py-[9px] text-brand-primary hover:bg-brand-primary bg-surface-bg hover:text-surface-bg font-bold mt-8 w-full flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
             >
-              {isSubmitting ? (
+              {isSubmitting || isUploading ? (
                 <>
-                  Creating account...
+                  {isUploading ? 'Uploading Image...' : 'Saving Product...'}
                   <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -130,32 +235,12 @@ export default function SignUpForm() {
                 </>
               ) : (
                 <>
-                  Create your account
+                  Add Product
                   <ArrowRightIcon className='h-5 w-5' />
                 </>
               )}
             </button>
           </form>
-
-          <div className='flex items-center my-6'>
-            <div className='flex-grow border-t border-brand-primary'></div>
-            <span className='px-3 text-sm font-bold'>Or</span>
-            <div className='flex-grow border-t border-brand-primary'></div>
-          </div>
-
-          <form>
-            <SignInButton />
-          </form>
-
-          <p className='mt-6 text-center text-sm font-semibold'>
-            {'Already have an account? '}
-            <Link
-              href='/signin'
-              className='font-bold text-brand-primary hover:underline'
-            >
-              Sign In!
-            </Link>
-          </p>
         </div>
       </div>
     </div>

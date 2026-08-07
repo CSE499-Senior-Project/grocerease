@@ -139,3 +139,37 @@ export async function changePassword(data: ChangePasswordData) {
 
   return { success: true };
 }
+
+export async function addProduct(data: AddProductData) {
+  // const imageFile = data.imageFile;
+
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('products')
+      .insert({
+        category_id: data.category_id,
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        unit: data.unit,
+        image_url: data.image_url,
+        stock_quantity: data.stock_quantity,
+        is_active: data.is_active
+      });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+  } catch (error) {
+    return { error: "An unexpected error occurred. Please try again."};
+  }
+
+  revalidatePath('/merchant/product-catalog');
+  revalidatePath('/products');
+  revalidatePath('/');
+
+  return { success: true };
+}
