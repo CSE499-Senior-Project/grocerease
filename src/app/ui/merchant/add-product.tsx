@@ -19,7 +19,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { addProduct } from '@/actions/actions';
 import { createClient } from '@/utils/supabase/client';
-import { optional } from 'zod';
 
 interface Category {
   id: string;
@@ -52,7 +51,15 @@ export default function AddProductForm({ categories }: { categories: Category[] 
     try {
       if (selectedFile) {
         const fileExt = selectedFile.name.split('.').pop();
-        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+        const sanitizedName = data.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)+/g, '');
+
+        const timestamp = new Date().getTime();
+
+        const fileName = `${sanitizedName}-${timestamp}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('product-images')
@@ -92,9 +99,8 @@ export default function AddProductForm({ categories }: { categories: Category[] 
 
   return (
     <div className='space-y-3 rounded-2xl h-full'>
-      <div className='glass-card p-4 md:p-6 h-full flex flex-col md:rounded-l-none md:rounded-r-2xl justify-center'>
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 md:p-6">
         <div className='flex-1 max-w-3xl mx-auto w-full'>
-          {/* Conditionally render the Server Error banner */}
           {errors.root && (
             <div className='mb-6 rounded-md bg-red-50 p-4 border border-red-200'>
               <p className='text-sm font-medium text-red-800'>
@@ -109,7 +115,7 @@ export default function AddProductForm({ categories }: { categories: Category[] 
               name='name'
               register={register}
               error={errors.name}
-              placeholder='e.g., Whole Wheat Bread'
+              placeholder='e.g., Tomato Sauce'
               icon={Square2StackIcon}
             />
 
@@ -137,21 +143,35 @@ export default function AddProductForm({ categories }: { categories: Category[] 
               {errors.category_id && <p className="mt-1 text-sm text-red-700 font-semibold">{errors.category_id.message}</p>}
             </div>
 
-            <FormInput
-              label='Description'
-              name='description'
-              register={register}
-              error={errors.description}
-              placeholder='Enter a short description'
-              icon={PencilSquareIcon}
-            />
+            <div>
+              <label 
+                className='mb-3 mt-5 block text-txt-primary text-sm font-semibold uppercase tracking-wider' 
+                htmlFor='description'
+              >
+                Description
+              </label>
+              <div className='relative'>
+                <textarea
+                  id='description'
+                  rows={4}
+                  placeholder='Enter a short description'
+                  {...register("description")}
+                  aria-invalid={!!errors.description}
+                  className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-4 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary resize-y'
+                />
+                <PencilSquareIcon className='pointer-events-none absolute left-3 top-[11px] h-[18px] text-green-800 peer-focus:text-green-400' />
+              </div>
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-700 font-semibold">{errors.description.message}</p>
+              )}
+            </div>
 
             <FormInput
               label='Unit (e.g., 1 loaf, 16 oz)'
               name='unit'
               register={register}
               error={errors.unit}
-              placeholder='e.g., 1 loaf'
+              placeholder='e.g., 15 oz'
               icon={Square2StackIcon}
             />
             
@@ -171,7 +191,14 @@ export default function AddProductForm({ categories }: { categories: Category[] 
                   />
                   <CurrencyDollarIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
                 </div>
-                {errors.price && <p className="mt-1 text-sm text-red-700 font-semibold">{errors.price.message}</p>}
+                {errors.price && 
+                  <div className="mt-1 flex items-center gap-1">
+                    <ExclamationCircleIcon className='pointer-events-none h-[18px] text-red-700' />
+                    <p className="text-sm text-red-700 font-semibold">
+                      {errors.price.message}
+                    </p>
+                  </div>
+                }
               </div>
 
               <div>
@@ -188,7 +215,14 @@ export default function AddProductForm({ categories }: { categories: Category[] 
                   />
                   <PlusCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
                 </div>
-                {errors.stock_quantity && <p className="mt-1 text-sm text-red-700 font-semibold">{errors.stock_quantity.message}</p>}
+                {errors.stock_quantity && 
+                  <div className="mt-1 flex items-center gap-1">
+                    <ExclamationCircleIcon className='pointer-events-none h-[18px] text-red-700' />
+                    <p className="text-sm text-red-700 font-semibold">
+                      {errors.stock_quantity.message}
+                    </p>
+                  </div>
+                }
               </div>
             </div>
             

@@ -141,20 +141,18 @@ export async function changePassword(data: ChangePasswordData) {
 }
 
 export async function addProduct(data: AddProductData) {
-  // const imageFile = data.imageFile;
-
   try {
     const supabase = await createClient();
 
     const { error } = await supabase
       .from('products')
       .insert({
-        category_id: data.category_id,
+        category_id: data.category_id || null,
         name: data.name,
-        description: data.description,
+        description: data.description || null,
         price: data.price,
         unit: data.unit,
-        image_url: data.image_url,
+        image_url: data.image_url || null,
         stock_quantity: data.stock_quantity,
         is_active: data.is_active
       });
