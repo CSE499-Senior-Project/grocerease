@@ -89,7 +89,7 @@ export default function AddProductForm({ categories }: { categories: Category[] 
         return;
       }
 
-      router.push('/merchant/product-catalog');
+      router.push('/merchant/product-catalog?product-added=true');
     } catch (error) {
       setError('root', { message: 'An unexpected error occurred while saving.' });
     } finally {
