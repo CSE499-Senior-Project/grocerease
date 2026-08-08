@@ -2,13 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, User } from "lucide-react";
+import { LogOut, Package, ShoppingCart, User } from "lucide-react";
 import SignOutButton from "../SignOutButton";
 import { useCart } from "@/context/CartContext";
 import Logo from "@/components/layout/Logo";
 import { createClient } from "@/utils/supabase/client";
 
-export default function AppHeader({ initialIsSignedIn }: { initialIsSignedIn: boolean }) {
+export default function AppHeader({
+  initialIsSignedIn,
+  firstName,
+}: {
+  initialIsSignedIn: boolean;
+  firstName?: string;
+}) {
   const [isSignedIn, setIsSignedIn] = useState(initialIsSignedIn);
   const supabase = createClient();
 
@@ -91,21 +97,31 @@ export default function AppHeader({ initialIsSignedIn }: { initialIsSignedIn: bo
                 aria-label="Account menu"
                 aria-expanded={isMenuOpen}
                 onClick={() => setIsMenuOpen((open) => !open)}
-                className="flex items-center text-slate-700 transition-colors hover:text-brand-primary"
+                className="flex items-center gap-2 text-slate-700 transition-colors hover:text-brand-primary"
               >
                 <User className="h-6 w-6" />
+                {firstName && <span className="font-medium">Hi, {firstName}</span>}
               </button>
 
               {isMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-40 rounded-lg border border-slate-200 bg-surface py-1 shadow-lg">
                   <Link
+                    href="/account/orders"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-brand-light hover:text-brand-primary"
+                  >
+                    <Package className="h-4 w-4" />
+                    Orders
+                  </Link>
+                  <Link
                     href="/account"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-brand-light hover:text-brand-primary"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-brand-light hover:text-brand-primary"
                   >
+                    <User className="h-4 w-4" />
                     Account
                   </Link>
-                  <SignOutButton />
+                  <SignOutButton icon={LogOut} />
                 </div>
               )}
             </div>
@@ -124,7 +140,7 @@ export default function AppHeader({ initialIsSignedIn }: { initialIsSignedIn: bo
           >
             Start Shopping
           </Link>
-          
+
           <Link
             href="/cart"
             aria-label={`Shopping cart with ${cartCount} ${

@@ -9,4 +9,5 @@ export interface Product {
   unit: string;
   stockQuantity: number;
   inStock: boolean;
+  createdAt: string;
 }
