@@ -10,6 +10,7 @@ import {
   ProfileUpdateSchema,
   ChangePasswordSchema,
 } from "@/types/profile";
+import { type AddProductData } from "@/types/merchant-products";
 import { createClient } from "@/utils/supabase/server";
 
 export async function signupUser(data: SignUpData) {
@@ -135,6 +136,38 @@ export async function changePassword(data: ChangePasswordData) {
   catch (error) {
     return { error: "An unexpected error occurred. Please try again." };
   }
+
+  return { success: true };
+}
+
+export async function addProduct(data: AddProductData) {
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('products')
+      .insert({
+        category_id: data.category_id || null,
+        name: data.name,
+        description: data.description || null,
+        price: data.price,
+        unit: data.unit,
+        image_url: data.image_url || null,
+        stock_quantity: data.stock_quantity,
+        is_active: data.is_active
+      });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+  } catch (error) {
+    return { error: "An unexpected error occurred. Please try again."};
+  }
+
+  revalidatePath('/merchant/product-catalog');
+  revalidatePath('/products');
+  revalidatePath('/');
 
   return { success: true };
 }

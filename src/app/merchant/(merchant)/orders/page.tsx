@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import OrderCard from "@/app/ui/merchant/order-card";
-import Image from "next/image";
 import PageTitle from "@/app/ui/account/page-title";
 import { getOrders } from "@/lib/order";
 import OrderStatusStepper from "@/app/ui/merchant/order-status-stepper";

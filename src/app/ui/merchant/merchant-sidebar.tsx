@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ArrowRightStartOnRectangleIcon,
-  KeyIcon,
-  MapPinIcon,
   QueueListIcon,
   Square2StackIcon,
 } from '@heroicons/react/24/outline';
@@ -13,9 +11,7 @@ import SignOutButton from '@/components/SignOutButton';
 
 const navItems = [
   { href: '/merchant/orders', label: 'Orders Queue', icon: QueueListIcon },
-  { href: '/merchant/products', label: 'Products', icon: Square2StackIcon },
-  // { href: '/merchant/password', label: 'Password', icon: KeyIcon }, // change to something
-  { href: '/merchant/address', label: 'Store Address', icon: MapPinIcon },
+  { href: '/merchant/product-catalog', label: 'Product Catalog', icon: Square2StackIcon },
 ];
 
 export default function MerchantSidebar({
