@@ -204,7 +204,11 @@ export async function getFeaturedProducts(
       products: rows.map(mapProductRow),
       error: null,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes('Dynamic server usage')) {
+      throw error;
+    }
+    
     console.error(
       "Unexpected featured-product loading error:",
       error,
