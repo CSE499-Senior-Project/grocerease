@@ -1,6 +1,8 @@
 import { getProfile } from "@/lib/profile";
 import MerchantSidebar from "@/app/ui/merchant/merchant-sidebar";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AccountLayout({
   children,
 }: Readonly<{
