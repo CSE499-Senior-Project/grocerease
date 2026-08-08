@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  AdjustmentsHorizontalIcon,
   ArrowRightIcon,
   CakeIcon,
   CurrencyDollarIcon,
@@ -13,7 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import FormInput from '@/components/FormInput';
 import { useForm } from 'react-hook-form';
-import { AddProductSchema, type AddProductData } from '@/types/merchant-products';
+import { ProductSchema, type ProductData } from '@/types/merchant-products';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -36,15 +35,15 @@ export default function AddProductForm({ categories }: { categories: Category[] 
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<AddProductData>({
-    resolver: zodResolver(AddProductSchema),
+  } = useForm<ProductData>({
+    resolver: zodResolver(ProductSchema),
     defaultValues: {
       is_active: true,
       category_id: "",
     },
   });
 
-  const onSubmit = async (data: AddProductData) => {
+  const onSubmit = async (data: ProductData) => {
     setIsUploading(true);
     let finalImageUrl = data.image_url || null;
 

@@ -9,9 +9,8 @@ export const metadata: Metadata = {
   title: "Product Catalog",
 };
 
-export default async function AccountDetailsPage() {
+export default async function ProductCatalogPage() {
   const products = await getProducts();
-  // const products = [];
 
   return (
     <>

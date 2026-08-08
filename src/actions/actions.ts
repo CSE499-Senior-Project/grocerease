@@ -10,7 +10,11 @@ import {
   ProfileUpdateSchema,
   ChangePasswordSchema,
 } from "@/types/profile";
-import { type AddProductData } from "@/types/merchant-products";
+import { 
+  type ProductData,
+  type EditProductData,
+  EditProductSchema,
+} from "@/types/merchant-products";
 import { createClient } from "@/utils/supabase/server";
 
 export async function signupUser(data: SignUpData) {
@@ -140,7 +144,7 @@ export async function changePassword(data: ChangePasswordData) {
   return { success: true };
 }
 
-export async function addProduct(data: AddProductData) {
+export async function addProduct(data: ProductData) {
   try {
     const supabase = await createClient();
 
@@ -162,7 +166,7 @@ export async function addProduct(data: AddProductData) {
     }
 
   } catch (error) {
-    return { error: "An unexpected error occurred. Please try again."};
+    return { error: "An unexpected error occurred. Please try again." };
   }
 
   revalidatePath('/merchant/product-catalog');
@@ -170,4 +174,44 @@ export async function addProduct(data: AddProductData) {
   revalidatePath('/');
 
   return { success: true };
+}
+
+export async function editProduct(data: EditProductData) {
+  const parsed = EditProductSchema.safeParse(data);
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('products')
+      .update({
+        category_id: parsed.data.category_id || null,
+        name: parsed.data.name,
+        description: parsed.data.description || null,
+        price: parsed.data.price,
+        unit: parsed.data.unit,
+        image_url: parsed.data.image_url || null,
+        stock_quantity: parsed.data.stock_quantity,
+        is_active: parsed.data.is_active
+      })
+      .eq('id', parsed.data.id);
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    revalidatePath('/merchant/product-catalog');
+    revalidatePath('/products');
+    revalidatePath(`/products/${parsed.data.id}`);
+    revalidatePath('/');
+
+    return { success: true };
+
+  } catch (error) {
+    return { error: "An unexpected error occurred. Please try again." };
+  }
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const AddProductSchema = z.object({
+export const ProductSchema = z.object({
   category_id: z.uuid({ error: "Invalid category" }).optional().nullable().or(z.literal("")),
   name: z.string().min(1, { error: "Product name is required" }).trim(),
   description: z.string().trim().optional().nullable().or(z.literal("")),
@@ -11,6 +11,9 @@ export const AddProductSchema = z.object({
   is_active: z.boolean(),
 });
 
+export const EditProductSchema = ProductSchema.extend({
+  id: z.uuid()
+});
 
 export type Product = {
   id: string;
@@ -34,4 +37,5 @@ export type MerchantProduct = Product & {
   categories: Category | null;
 };
 
-export type AddProductData = z.infer<typeof AddProductSchema>;
+export type ProductData = z.infer<typeof ProductSchema>;
+export type EditProductData = z.infer<typeof EditProductSchema>;

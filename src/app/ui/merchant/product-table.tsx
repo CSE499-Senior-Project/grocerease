@@ -4,6 +4,7 @@ import Image from "next/image";
 import { MerchantProduct } from "@/types/merchant-products";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 interface ProductTableProps {
   products: MerchantProduct[];
@@ -12,16 +13,20 @@ interface ProductTableProps {
 export default function ProductTable({ products }: ProductTableProps) {
   const searchParams = useSearchParams();
   const isProductNew = searchParams.get('product-added') === 'true';
+  const isProductEdited = searchParams.get('product-edited') === 'true';
+  const showSuccessBanner = isProductNew || isProductEdited;
+  const actiontext = isProductNew ? 'added' : 'edited';
 
   return (
     <>
-      {isProductNew && (
+      {showSuccessBanner && (
         <div className='mb-6 rounded-md bg-green-50 p-4 border border-green-200'>
           <p className='text-sm font-medium text-green-800'>
-            Product successfully added!
+            Product successfully {actiontext}!
           </p>
         </div>
       )}
+      
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
         <table className="w-full whitespace-nowrap text-left test-sm text-slate-600">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase trackging-wider text-slate-500">
@@ -84,12 +89,13 @@ export default function ProductTable({ products }: ProductTableProps) {
                   </span>
                 </td>
                 <td className="px-4 py-4 lg:px-6">
-                  <button
-                    type="button"
+                  <Link
+                    href={`/merchant/product-catalog/${product.id}/edit`}
                     aria-label={`Edit ${product.name}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-md text-brand-primary transition-colors hover:bg-brand-light hover:text-brand-dark cursor-pointer">
+                    className="flex h-8 w-8 items-center justify-center rounded-md text-brand-primary transition-colors hover:bg-brand-light hover:text-brand-dark cursor-pointer"
+                    >
                     <PencilSquareIcon className="h-5 w-5"/>
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}

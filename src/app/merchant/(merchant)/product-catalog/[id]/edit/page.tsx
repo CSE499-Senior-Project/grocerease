@@ -1,13 +1,33 @@
 import type { Metadata } from "next";
-import { getAuthenticatedProfile } from "@/lib/profile";
-import ProfileEditForm from "@/app/ui/account/profile-edit-form";
+import { notFound } from "next/navigation";
+import { getProducts } from "@/lib/merchant-products";
+import ProductEditForm from "@/app/ui/merchant/product-edit-form";
+import { getCategories } from "@/lib/products";
 
 export const metadata: Metadata = {
-  title: "Edit Account Details",
+  title: "Edit Product Details",
 };
 
-export default async function EditAccountDetailsPage() {
-  const profile = await getAuthenticatedProfile();
+type EditProductPageProps = {
+  params: Promise<{
+    id: string;
+  }>;
+};
 
-  return <ProfileEditForm profile={profile} />;
+export default async function EditProductDetailsPage({ params }: EditProductPageProps) {
+  const { id } = await params;
+
+  const products = await getProducts();
+  const { categories } = await getCategories();
+  const productToEdit = products.find((product) => product.id === id);
+
+  if (!productToEdit) {
+    notFound();
+  }
+
+  return (
+    <>
+      <ProductEditForm product={productToEdit} categories={categories} />
+    </>
+  );
 }

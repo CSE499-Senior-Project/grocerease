@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Add Product",
 };
 
-export default async function NewAddressPage() {
+export default async function NewProductPage() {
   const { categories, error } = await getCategories();
   return (
     <>
