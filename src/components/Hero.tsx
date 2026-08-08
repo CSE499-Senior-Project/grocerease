@@ -1,6 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 
-export default function Hero() {
+import { getHeroCategories } from "@/lib/products";
+
+export default async function Hero() {
+  const categories = await getHeroCategories();
+
   return (
     <section className="overflow-hidden bg-surface-background">
       <div className="mx-auto grid min-h-[650px] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-8">
@@ -59,16 +64,37 @@ export default function Hero() {
           <div className="relative rounded-3xl border border-green-100 bg-white p-8 shadow-xl">
             <div className="rounded-2xl bg-brand-light p-8">
               <div className="grid grid-cols-2 gap-4">
-                {["Fresh Produce", "Bakery", "Dairy", "Pantry"].map(
-                  (category) => (
-                    <div
-                      key={category}
-                      className="flex min-h-32 items-end rounded-xl bg-white p-4 shadow-sm"
+                {categories.map((category) => (
+                  <Link
+                    key={category.category}
+                    href={`/products?category=${encodeURIComponent(category.category)}`}
+                    className="group relative flex min-h-32 items-end overflow-hidden rounded-xl bg-white p-4 shadow-sm"
+                  >
+                    {category.image && (
+                      <Image
+                        src={category.image}
+                        alt=""
+                        fill
+                        sizes="(max-width: 1024px) 50vw, 240px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    )}
+
+                    {category.image && (
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    )}
+
+                    <p
+                      className={`relative z-10 font-semibold ${
+                        category.image
+                          ? "text-white"
+                          : "text-slate-900"
+                      }`}
                     >
-                      <p className="font-semibold text-slate-900">{category}</p>
-                    </div>
-                  ),
-                )}
+                      {category.name}
+                    </p>
+                  </Link>
+                ))}
               </div>
             </div>
 

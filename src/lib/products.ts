@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import type { Product } from "@/types/product";
 import { createClient } from "@/utils/supabase/server";
 
@@ -17,6 +18,7 @@ type ProductRow = {
   stock_quantity: number;
   is_active: boolean;
   categories: CategoryRow | CategoryRow[] | null;
+  created_at: string
 };
 
 type CategoryDatabaseRow = {
@@ -34,7 +36,6 @@ export type ProductSort =
 export type GetProductsOptions = {
   search?: string;
   category?: string;
-  inStockOnly?: boolean;
   sort?: ProductSort;
   page?: number;
   pageSize?: number;
@@ -62,6 +63,31 @@ export type CategoriesResult = {
   error: string | null;
 };
 
+export type HeroCategory = {
+  name: string;
+  category: string;
+  image: string | null;
+};
+
+const HERO_CATEGORY_CONFIG = [
+  {
+    name: "Fresh Produce",
+    category: "Fresh Produce",
+  },
+  {
+    name: "Bakery",
+    category: "Bakery",
+  },
+  {
+    name: "Dairy",
+    category: "Dairy & Eggs",
+  },
+  {
+    name: "Pantry",
+    category: "Pantry & Dry Goods",
+  },
+] as const;
+
 const PRODUCT_COLUMNS = `
   id,
   category_id,
@@ -75,7 +101,8 @@ const PRODUCT_COLUMNS = `
   categories (
     id,
     name
-  )
+  ),
+  created_at
 `;
 
 const PRODUCT_COLUMNS_WITH_CATEGORY_FILTER = `
@@ -91,7 +118,8 @@ const PRODUCT_COLUMNS_WITH_CATEGORY_FILTER = `
   categories!inner (
     id,
     name
-  )
+  ),
+  created_at
 `;
 
 function getCategory(
@@ -134,6 +162,7 @@ function mapProductRow(product: ProductRow): Product {
     unit: product.unit,
     stockQuantity: product.stock_quantity,
     inStock: product.stock_quantity > 0,
+    createdAt: product.created_at
   };
 }
 
@@ -221,7 +250,7 @@ export async function getFeaturedProducts(
  * Supports:
  * - search by product name
  * - category filtering
- * - in-stock filtering
+ * - automatically excludes out-of-stock products
  * - sorting
  * - pagination
  */
@@ -231,7 +260,6 @@ export async function getProducts(
   const {
     search = "",
     category = "",
-    inStockOnly = false,
     sort = "newest",
     page = 1,
     pageSize = 12,
@@ -258,7 +286,8 @@ export async function getProducts(
       .select(selectedColumns, {
         count: "exact",
       })
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .gt("stock_quantity", 0);
 
     const trimmedSearch = search.trim();
     const trimmedCategory = category.trim();
@@ -275,10 +304,6 @@ export async function getProducts(
         "categories.name",
         trimmedCategory,
       );
-    }
-
-    if (inStockOnly) {
-      query = query.gt("stock_quantity", 0);
     }
 
     query = applySort(query, sort);
@@ -434,5 +459,79 @@ export async function getCategories(): Promise<CategoriesResult> {
       error:
         "An unexpected error occurred while loading categories.",
     };
+  }
+}
+
+/**
+ * Returns one representative Supabase product image for each hero category.
+ */
+export async function getHeroCategories(): Promise<HeroCategory[]> {
+  const fallbackCategories = HERO_CATEGORY_CONFIG.map((category) => ({
+    ...category,
+    image: null,
+  }));
+
+  try {
+    const supabase = await createClient();
+
+    const categoryNames = HERO_CATEGORY_CONFIG.map(
+      (category) => category.category,
+    );
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(`
+        image_url,
+        categories!inner (
+          id,
+          name
+        )
+      `)
+      .eq("is_active", true)
+      .gt("stock_quantity", 0)
+      .not("image_url", "is", null)
+      .in("categories.name", categoryNames)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(
+        "Unable to load hero category images:",
+        error.message,
+      );
+
+      return fallbackCategories;
+    }
+
+    const categoryImages = new Map<string, string>();
+
+    const rows = (data ?? []) as unknown as Array<
+      Pick<ProductRow, "image_url" | "categories">
+    >;
+
+    for (const row of rows) {
+      const category = getCategory(row.categories);
+
+      if (
+        category &&
+        row.image_url &&
+        !categoryImages.has(category.name)
+      ) {
+        categoryImages.set(category.name, row.image_url);
+      }
+    }
+
+    return HERO_CATEGORY_CONFIG.map((category) => ({
+      ...category,
+      image: categoryImages.get(category.category) ?? null,
+    }));
+  } catch (error) {
+    unstable_rethrow(error);
+
+    console.error(
+      "Unexpected hero category loading error:",
+      error,
+    );
+
+    return fallbackCategories;
   }
 }
