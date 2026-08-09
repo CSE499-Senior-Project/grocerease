@@ -21,6 +21,7 @@ export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const isSignedUp = searchParams.get('signup') === 'true';
+  const pageMessage = searchParams.get('message') ?? undefined;
 
   const {
     register,
@@ -53,6 +54,14 @@ export default function SignInForm() {
           <div className='mb-6 rounded-md bg-green-50 p-4 border border-green-200'>
             <p className='text-sm font-medium text-green-800'>
               Account successfully created! Please sign in below.
+            </p>
+          </div>
+        )}
+
+        {pageMessage && (
+          <div className='mb-6 rounded-md bg-yellow-50 p-4 border border-yellow-200'>
+            <p className='text-sm font-medium text-yellow-800'>
+              {pageMessage}
             </p>
           </div>
         )}

@@ -1,16 +1,31 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { useCart } from "@/context/CartContext";
+import { createClient } from "@/utils/supabase/client";
 
 export default function CartPage() {
   const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
+  const router = useRouter();
 
   const deliveryFee = cartTotal > 40 ? 0 : 4.99;
   const totalWithDelivery = cartTotal + deliveryFee;
+
+  async function handleCheckout() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push('/signin?message=PLEASE+LOG+IN');
+      return;
+    }
+
+    router.push('/checkout');
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -152,12 +167,13 @@ export default function CartPage() {
             </div>
           </div>
 
-          <Link
-            href="/checkout"
+          <button
+            type="button"
+            onClick={handleCheckout}
             className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-primary px-4 py-3 font-semibold text-white transition-colors hover:bg-brand-dark"
           >
             Proceed to checkout
-          </Link>
+          </button>
 
           <Link
             href="/products"
