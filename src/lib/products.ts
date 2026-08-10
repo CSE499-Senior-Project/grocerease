@@ -230,7 +230,11 @@ export async function getFeaturedProducts(
       products: rows.map(mapProductRow),
       error: null,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes('Dynamic server usage')) {
+      throw error;
+    }
+
     console.error(
       "Unexpected featured-product loading error:",
       error,
@@ -448,7 +452,11 @@ export async function getCategories(): Promise<CategoriesResult> {
         (data ?? []) as CategoryDatabaseRow[],
       error: null,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE' || error?.message?.includes('Dynamic server usage')) {
+      throw error;
+    }
+
     console.error(
       "Unexpected category loading error:",
       error,

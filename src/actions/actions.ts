@@ -10,6 +10,11 @@ import {
   ProfileUpdateSchema,
   ChangePasswordSchema,
 } from "@/types/profile";
+import { 
+  type ProductData,
+  type EditProductData,
+  EditProductSchema,
+} from "@/types/merchant-products";
 import { createClient } from "@/utils/supabase/server";
 
 export async function signupUser(data: SignUpData) {
@@ -137,4 +142,76 @@ export async function changePassword(data: ChangePasswordData) {
   }
 
   return { success: true };
+}
+
+export async function addProduct(data: ProductData) {
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('products')
+      .insert({
+        category_id: data.category_id || null,
+        name: data.name,
+        description: data.description || null,
+        price: data.price,
+        unit: data.unit,
+        image_url: data.image_url || null,
+        stock_quantity: data.stock_quantity,
+        is_active: data.is_active
+      });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+  } catch (error) {
+    return { error: "An unexpected error occurred. Please try again." };
+  }
+
+  revalidatePath('/merchant/product-catalog');
+  revalidatePath('/products');
+  revalidatePath('/');
+
+  return { success: true };
+}
+
+export async function editProduct(data: EditProductData) {
+  const parsed = EditProductSchema.safeParse(data);
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('products')
+      .update({
+        category_id: parsed.data.category_id || null,
+        name: parsed.data.name,
+        description: parsed.data.description || null,
+        price: parsed.data.price,
+        unit: parsed.data.unit,
+        image_url: parsed.data.image_url || null,
+        stock_quantity: parsed.data.stock_quantity,
+        is_active: parsed.data.is_active
+      })
+      .eq('id', parsed.data.id);
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    revalidatePath('/merchant/product-catalog');
+    revalidatePath('/products');
+    revalidatePath(`/products/${parsed.data.id}`);
+    revalidatePath('/');
+
+    return { success: true };
+
+  } catch (error) {
+    return { error: "An unexpected error occurred. Please try again." };
+  }
 }

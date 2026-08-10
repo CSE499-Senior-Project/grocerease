@@ -1,6 +1,8 @@
 import { getProfile } from "@/lib/profile";
 import MerchantSidebar from "@/app/ui/merchant/merchant-sidebar";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AccountLayout({
   children,
 }: Readonly<{
@@ -26,11 +28,11 @@ export default async function AccountLayout({
           {isAdmin ? (
             <div className="flex flex-col gap-6 md:flex-row md:items-start">
               <MerchantSidebar firstName={profile.first_name} memberSince={memberSince} />
-              <div className="w-full flex-1">{children}</div>
+              <div className="w-full flex-1 min-w-0">{children}</div>
             </div>
           ) : (
             <div>
-              <div className="w-full flex-1">{children}</div>
+              <div className="w-full flex-1 min-w-0">{children}</div>
             </div>
           )}
         </div>

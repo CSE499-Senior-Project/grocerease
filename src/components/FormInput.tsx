@@ -14,6 +14,7 @@ interface FormInputProps<T extends FieldValues> {
   icon2?: ElementType;
   onIcon2Click?: () => void;
   uppercase?: boolean;
+  step?: number;
 }
 
 export default function FormInput<T extends FieldValues>({
@@ -22,6 +23,7 @@ export default function FormInput<T extends FieldValues>({
   register,
   error,
   type = "text",
+  step,
   placeholder,
   autoComplete,
   icon: Icon,
@@ -46,6 +48,7 @@ export default function FormInput<T extends FieldValues>({
           {...register(name)}
           type={type}
           id={name}
+          step={step}
           placeholder={placeholder}
           autoComplete={autoComplete}
           aria-invalid={!!error}
