@@ -1,3 +1,15 @@
+import { z } from "zod";
+
+export const CheckoutSchema = z.object({
+  user_id: z.uuid(),
+  subtotal: z.number(),
+  service_fee: z.number(),
+  total_amount: z.number(),
+  delivery_time_slot: z.string(),
+  delivery_address: z.string(),
+})
+
+
 export type Order = {
   id: string;
   user_id: string;

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import AddressForm from "@/app/ui/account/address-form";
+import NewAddressClient from "./new-address-client";
 
 export const metadata: Metadata = {
   title: "Add Address",
 };
 
 export default function NewAddressPage() {
-  return <AddressForm />;
+  return <NewAddressClient />;
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getUserAddresses } from "@/lib/addresses";
-import AddressForm from "@/app/ui/account/address-form";
+import EditAddressClient from "./edit-address-client";
 
 export const metadata: Metadata = {
   title: "Edit Address",
@@ -22,5 +22,5 @@ export default async function EditAddressPage({ params }: EditAddressPageProps) 
     notFound();
   }
 
-  return <AddressForm address={address} />;
+  return <EditAddressClient address={address} />;
 }

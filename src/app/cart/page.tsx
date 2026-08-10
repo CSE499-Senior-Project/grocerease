@@ -1,16 +1,36 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
-
+// import { Metadata } from "next";
 import { useCart } from "@/context/CartContext";
+import { createClient } from "@/utils/supabase/client";
+
+// export const metadata: Metadata = {
+//   title: "Cart",
+// };
+
 
 export default function CartPage() {
   const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
+  const router = useRouter();
 
   const deliveryFee = cartTotal > 40 ? 0 : 4.99;
   const totalWithDelivery = cartTotal + deliveryFee;
+
+  async function handleCheckout() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push('/signin?message=false');
+      return;
+    }
+
+    router.push('/checkout');
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -146,18 +166,23 @@ export default function CartPage() {
               <span>Delivery</span>
               <span>{deliveryFee === 0 ? "Free" : `$${deliveryFee.toFixed(2)}`}</span>
             </div>
+            <div className="flex items-center justify-between">
+              <span>Taxes</span>
+              <span>Calculated at checkout</span>
+            </div>
             <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-semibold text-slate-900">
               <span>Total</span>
               <span>${totalWithDelivery.toFixed(2)}</span>
             </div>
           </div>
 
-          <Link
-            href="/checkout"
-            className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-primary px-4 py-3 font-semibold text-white transition-colors hover:bg-brand-dark"
+          <button
+            type="button"
+            onClick={handleCheckout}
+            className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-primary px-4 py-3 font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer"
           >
             Proceed to checkout
-          </Link>
+          </button>
 
           <Link
             href="/products"

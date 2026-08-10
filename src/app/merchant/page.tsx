@@ -1,5 +1,11 @@
 import { getProfile } from "@/lib/profile";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Partner with us",
+};
+
 
 export default async function MerchantPage() {
   const profile = await getProfile();
