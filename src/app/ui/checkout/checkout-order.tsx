@@ -70,7 +70,7 @@ export default function CheckoutOrder({ initialAddresses }: CheckoutOrderProps) 
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+    <section className="mx-auto w-full max-w-7xl px-6 py-12 lg:px-8">
       <div className="mb-8">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-primary">
           Checkout
