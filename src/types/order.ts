@@ -16,6 +16,7 @@ export type Order = {
   status: "pending" | "shopping" | "out for delivery" | "delivered";
   subtotal: number;
   service_fee: number;
+  tax_amount: number;
   total_amount: number;
   delivery_time_slot: string;
   delivery_address: string;

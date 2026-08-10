@@ -83,13 +83,21 @@ export default async function OrdersPage() {
                     currentStatus={order.status as any}
                   />
                 </div>
-                <div className="flex w-full shrink-0 flex-row items-center justify-between xl:w-auto xl:flex-col xl:justify-end gap-1">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Total Amount
-                  </span>
-                  <span className="text-2xl font-bold text-brand-primary">
-                    ${order.total_amount.toFixed(2)}
-                  </span>
+                <div className="flex w-full shrink-0 flex-col items-end gap-2 xl:w-auto">
+                  <div className="flex flex-col items-end text-sm text-slate-500">
+                    <span>Subtotal: ${order.subtotal.toFixed(2)}</span>
+                    <span>Tax: ${order.tax_amount.toFixed(2)}</span>
+                    <span>Delivery: ${order.service_fee.toFixed(2)}</span>
+                  </div>
+
+                  <div className="flex w-full flex-row items-center justify-between xl:flex-col xl:items-end gap-1">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Total Amount
+                    </span>
+                    <span className="text-2xl font-bold text-brand-primary">
+                      ${order.total_amount.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
 

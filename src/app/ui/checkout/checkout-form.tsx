@@ -27,7 +27,9 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
   const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery">("card");
 
   const deliveryFee = cartTotal > 40 ? 0 : 4.99;
-  const totalWithDelivery = cartTotal + deliveryFee;
+  const taxRate = 0.06;
+  const taxAmount = cartTotal * taxRate;
+  const finalTotal = cartTotal + deliveryFee + taxAmount;
 
   const orderSummary = useMemo(
     () =>
@@ -178,9 +180,13 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
             <span>Delivery</span>
             <span>{deliveryFee === 0 ? "Free" : `$${deliveryFee.toFixed(2)}`}</span>
           </div>
+          <div className="flex items-center justify-between">
+            <span>Taxes</span>
+            <span>${taxAmount.toFixed(2)}</span>
+          </div>
           <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-semibold text-slate-900">
             <span>Total</span>
-            <span>${totalWithDelivery.toFixed(2)}</span>
+            <span>${finalTotal.toFixed(2)}</span>
           </div>
         </div>
 

@@ -98,6 +98,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <span>Service fee</span>
               <span>${order.service_fee.toFixed(2)}</span>
             </div>
+            <div className="flex items-center justify-between">
+              <span>Taxes</span>
+              <span>${order.tax_amount.toFixed(2)}</span>
+            </div>
             <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-semibold text-slate-900">
               <span>Total</span>
               <span>${order.total_amount.toFixed(2)}</span>
