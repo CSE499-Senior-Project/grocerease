@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, CreditCard, Banknote } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import type { Address } from "@/types/address";
@@ -23,6 +23,8 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
   const [selectedAddressId, setSelectedAddressId] = useState<string | undefined>(
     addresses.find(a => a.is_default)?.id
   );
+  
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery">("card");
 
   const deliveryFee = cartTotal > 40 ? 0 : 4.99;
   const totalWithDelivery = cartTotal + deliveryFee;
@@ -56,47 +58,100 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
 
   return (
     <div className="grid gap-8 lg:grid-cols-12">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm self-start lg:col-span-8">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">Delivery details</h2>
-          {!isAddingAddress && (
-            <button
-              type="button"
-              onClick={() => setIsAddingAddress(true)}
-              className="inline-flex items-center gap-1 rounded-full bg-brand-light px-3 py-1.5 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white"
-            >
-              <Plus className="h-4 w-4" />
-              Add new
-            </button>
-          )}
-        </div>
-
-        {errorMessage && !isAddingAddress ? (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {errorMessage}
-          </div>
-        ) : null}
-
-        {isAddingAddress ? (
-          <AddressForm 
-            onSuccess={handleAddressAdded} 
-            onCancel={() => setIsAddingAddress(false)} 
-          />
-        ) : (
-          <AddressList 
-            addresses={addresses}
-            selectedId={selectedAddressId}
-            onSelect={(address) => {
-              setSelectedAddressId(address.id);
-              setErrorMessage("");
-            }}
-            actions={(address) => (
-              selectedAddressId === address.id ? (
-                <span className="text-sm font-semibold text-brand-primary">Selected</span>
-              ) : null
+      
+      <div className="flex flex-col gap-10 self-start lg:col-span-8">
+        
+        <section>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-slate-900">1. Delivery address</h2>
+            {!isAddingAddress && (
+              <button
+                type="button"
+                onClick={() => setIsAddingAddress(true)}
+                className="inline-flex items-center gap-1 rounded-full bg-brand-light px-3 py-1.5 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white"
+              >
+                <Plus className="h-4 w-4" />
+                Add new
+              </button>
             )}
-          />
-        )}
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            {errorMessage && !isAddingAddress ? (
+              <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {errorMessage}
+              </div>
+            ) : null}
+
+            {isAddingAddress ? (
+              <AddressForm 
+                onSuccess={handleAddressAdded} 
+                onCancel={() => setIsAddingAddress(false)} 
+              />
+            ) : (
+              <AddressList 
+                addresses={addresses}
+                selectedId={selectedAddressId}
+                onSelect={(address) => {
+                  setSelectedAddressId(address.id);
+                  setErrorMessage("");
+                }}
+                actions={(address) => (
+                  selectedAddressId === address.id ? (
+                    <span className="text-sm font-semibold text-brand-primary">Selected</span>
+                  ) : null
+                )}
+              />
+            )}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="mb-4 text-2xl font-bold text-slate-900">2. Payment method</h2>
+          
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("card")}
+                className={`flex items-start gap-3 rounded-2xl border p-4 transition-colors ${
+                  paymentMethod === "card" 
+                    ? "border-brand-primary bg-brand-light/30 ring-1 ring-brand-primary shadow-sm" 
+                    : "border-slate-200 hover:border-brand-primary"
+                }`}
+              >
+                <CreditCard className={`h-6 w-6 shrink-0 ${paymentMethod === "card" ? "text-brand-primary" : "text-slate-400"}`} />
+                <div className="text-left">
+                  <p className="font-semibold text-slate-900">Credit Card</p>
+                  <p className="mt-1 text-xs text-slate-500">Pay securely now</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("delivery")}
+                className={`flex items-start gap-3 rounded-2xl border p-4 transition-colors ${
+                  paymentMethod === "delivery" 
+                    ? "border-brand-primary bg-brand-light/30 ring-1 ring-brand-primary shadow-sm" 
+                    : "border-slate-200 hover:border-brand-primary"
+                }`}
+              >
+                <Banknote className={`h-6 w-6 shrink-0 ${paymentMethod === "delivery" ? "text-brand-primary" : "text-slate-400"}`} />
+                <div className="text-left">
+                  <p className="font-semibold text-slate-900">Pay on Delivery</p>
+                  <p className="mt-1 text-xs text-slate-500">Pay when it arrives</p>
+                </div>
+              </button>
+            </div>
+            
+            {paymentMethod === "card" && (
+              <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
+                <p>This is a mock checkout. No real payment information is required.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
       </div>
 
       <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm self-start lg:col-span-4">
