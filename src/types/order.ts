@@ -1,13 +1,19 @@
 import { z } from "zod";
 
 export const CheckoutSchema = z.object({
-  user_id: z.uuid(),
-  subtotal: z.number(),
-  service_fee: z.number(),
-  total_amount: z.number(),
-  delivery_time_slot: z.string(),
-  delivery_address: z.string(),
-})
+  user_id: z.uuid({ message: "Invalid user ID." }).optional(),
+  subtotal: z.number().min(0, { message: "Subtotal cannot be negative." }),
+  service_fee: z.number().min(0, { message: "Service fee cannot be negative." }),
+  total_amount: z.number().min(0, { message: "Total amount cannot be negative." }),
+  tax_amount: z.number().min(0, { message: "Tax amount cannot be negative." }),
+  delivery_time_slot: z.iso.datetime({ message: "Invalid delivery time slot."}).refine((val) => new Date(val) > new Date(), { message: "Delivery time must be in the future." }),
+  delivery_address: z.string().trim().min(1, { message: "Delivery address is required" }),
+  items: z.array(z.object({
+    product_id: z.uuid({ message: "Invalid product ID." }).nullable(),
+    quantity: z.int().min(0, { message: ""}),
+    price_at_time: z.number().min(0, { message: "Price amount cannot be negative." })
+  }))
+});
 
 
 export type Order = {
@@ -60,3 +66,5 @@ export type MerchantOrder = Order & {
 export type CustomerOrder = Order & {
   order_items: OrderItemWithProduct[];
 };
+
+export type CheckoutData = z.infer<typeof CheckoutSchema>;

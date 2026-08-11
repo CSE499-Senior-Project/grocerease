@@ -113,5 +113,3 @@ export const getCustomerOrderById = cache(async (orderId: string): Promise<Custo
 
   return order;
 })
-
-// export const placeOrder

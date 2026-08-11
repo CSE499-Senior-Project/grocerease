@@ -16,6 +16,7 @@ import {
   EditProductSchema,
 } from "@/types/merchant-products";
 import { createClient } from "@/utils/supabase/server";
+import { CheckoutData, CheckoutSchema } from "@/types/order";
 
 export async function signupUser(data: SignUpData) {
   try {
@@ -214,4 +215,65 @@ export async function editProduct(data: EditProductData) {
   } catch (error) {
     return { error: "An unexpected error occurred. Please try again." };
   }
+}
+
+export async function placeOrder(data: CheckoutData) {
+  try {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "You must be signed in to place an order." };
+    }
+
+    const payloadWithUser = { ...data, user_id: user.id };
+
+    const parsed = CheckoutSchema.safeParse(payloadWithUser);
+
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+    }
+
+    const { data: newOrder, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: parsed.data.user_id,
+        subtotal: parsed.data.subtotal,
+        service_fee: parsed.data.service_fee,
+        tax_amount: parsed.data.tax_amount,
+        total_amount: parsed.data.total_amount,
+        delivery_time_slot: parsed.data.delivery_time_slot,
+        delivery_address: parsed.data.delivery_address
+      })
+      .select('id')
+      .single();
+
+    if (orderError || !newOrder) {
+      return { error: orderError?.message || "Failed to create order." };
+    }
+
+    const orderItems = parsed.data.items.map((item) => ({
+      order_id: newOrder.id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price_at_time: item.price_at_time
+    }));
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+    
+    if (itemsError) {
+      return { error: itemsError.message };
+    }
+
+  } catch (error) {
+    return { error: "An unexpected error occurred. Please try again." };
+  }
+
+  revalidatePath('/merchant/orders');
+  revalidatePath('/account/orders');
+
+  return { success: true };
 }
