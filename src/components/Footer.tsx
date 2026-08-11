@@ -7,14 +7,14 @@ const footerLinks = {
     { label: "Special Offers", href: "/products?filter=sale" },
   ],
   Company: [
-    { label: "About GrocerEase", href: "/about" },
+    { label: "About GrocerEase", href: "/#benefits" },
     { label: "For Merchants", href: "#merchants" },
-    { label: "Contact", href: "/contact" },
+    { label: "Contact", href: "" },
   ],
   Support: [
-    { label: "Help Center", href: "/help" },
-    { label: "Delivery Information", href: "/delivery" },
-    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Help Center", href: "" },
+    { label: "Delivery Information", href: "" },
+    { label: "Privacy Policy", href: "" },
   ],
 };
 
