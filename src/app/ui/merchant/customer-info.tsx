@@ -9,6 +9,32 @@ interface CustomerInfoProps {
   deliveryTimeSlot: string;
 }
 
+function formatDeliveryWindow(isoString: string) {
+  try {
+    const startDate = new Date(isoString);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+
+    const datePart = new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+    }).format(startDate);
+
+    const startTime = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(startDate);
+
+    const endTime = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(endDate);
+
+    return `${datePart} · ${startTime} - ${endTime}`;
+  } catch (error) {
+    return isoString;
+  }
+}
+
 export default function CustomerInfo({ firstName, lastName, email, phoneNumber, deliveryAddress, deliveryTimeSlot }: CustomerInfoProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -44,7 +70,7 @@ export default function CustomerInfo({ firstName, lastName, email, phoneNumber, 
           Delivery Window
         </span>
         <span className="text-sm font-medium text-slate-900">
-          {deliveryTimeSlot}
+          {formatDeliveryWindow(deliveryTimeSlot)}
         </span>
       </div>
     </div>

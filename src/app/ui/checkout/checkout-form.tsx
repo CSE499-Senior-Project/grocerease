@@ -23,10 +23,46 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
   const [selectedAddressId, setSelectedAddressId] = useState<string | undefined>(
     addresses.find(a => a.is_default)?.id
   );
+
+  const [deliveryDay, setDeliveryDay] = useState<"today" | "tomorrow">("today");
+  const [deliveryTimeSlot, setDeliveryTimeSlot] = useState<string>("");
+
+  const availableSlots = useMemo(() => {
+    const slots: Date[] = [];
+    const now = new Date();
+    const targetDate = new Date();
+
+    if (deliveryDay === "tomorrow") {
+      targetDate.setDate(targetDate.getDate() + 1);
+    }
+
+    for (let hour = 7; hour <= 21; hour++) {
+      const slotTime = new Date(targetDate);
+      slotTime.setHours(hour, 0, 0, 0);
+
+      if (deliveryDay === "today" && slotTime.getTime() <= now.getTime() + 60 * 60 * 1000) {
+        continue;
+      }
+      slots.push(slotTime);
+    }
+    return slots;
+  }, [deliveryDay]);
+
+  const formatSlotLabel = (date: Date) => {
+    const startTime = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    
+    const endDate = new Date(date);
+    endDate.setHours(date.getHours() + 1);
+    const endTime = endDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    
+    return `${startTime} - ${endTime}`;
+  };
   
   const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery">("card");
 
-  const deliveryFee = cartTotal > 40 ? 0 : 4.99;
+  const baseDeliveryFee = cartTotal > 40 ? 0 : 4.99;
+  const premiumFee = deliveryTimeSlot === "ASAP (Premium)" ? 10.00 : 0;
+  const deliveryFee = baseDeliveryFee + premiumFee;
   const taxRate = 0.06;
   const taxAmount = cartTotal * taxRate;
   const finalTotal = cartTotal + deliveryFee + taxAmount;
@@ -109,7 +145,70 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
         </section>
 
         <section>
-          <h2 className="mb-4 text-2xl font-bold text-slate-900">2. Payment method</h2>
+          <h2 className="mb-4 text-2xl font-bold text-slate-900">2. Delivery options</h2>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            
+            <div className="mb-6 flex gap-4 border-b border-slate-200 pb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setDeliveryDay("today");
+                  setDeliveryTimeSlot("");
+                }}
+                className={`pb-2 font-semibold transition-colors ${
+                  deliveryDay === "today"
+                    ? "border-b-2 border-brand-primary text-brand-primary"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDeliveryDay("tomorrow");
+                  setDeliveryTimeSlot(""); 
+                }}
+                className={`pb-2 font-semibold transition-colors ${
+                  deliveryDay === "tomorrow"
+                    ? "border-b-2 border-brand-primary text-brand-primary"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Tomorrow
+              </button>
+            </div>
+
+            {availableSlots.length === 0 ? (
+              <p className="text-sm text-slate-500">No delivery slots remaining for today. Please select tomorrow.</p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {availableSlots.map((slot) => {
+                  const isoString = slot.toISOString();
+                  const isSelected = deliveryTimeSlot === isoString;
+                  
+                  return (
+                    <button
+                      key={isoString}
+                      type="button"
+                      onClick={() => setDeliveryTimeSlot(isoString)}
+                      className={`flex items-center justify-center rounded-xl border p-3 text-sm font-medium transition-colors ${
+                        isSelected
+                          ? "border-brand-primary bg-brand-light/30 text-brand-primary ring-1 ring-brand-primary shadow-sm"
+                          : "border-slate-200 text-slate-700 hover:border-brand-primary"
+                      }`}
+                    >
+                      {formatSlotLabel(slot)}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="mb-4 text-2xl font-bold text-slate-900">3. Payment method</h2>
           
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="grid gap-4 sm:grid-cols-2">
