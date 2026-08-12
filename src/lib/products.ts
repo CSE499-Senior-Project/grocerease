@@ -136,6 +136,13 @@ function getCategory(
   return categories;
 }
 
+/**
+ * Maps a product row from the database to the application's `Product` type.
+ * This function handles data transformation, such as converting price to a number,
+ * providing a placeholder image, and normalizing category information.
+ * @param {ProductRow} product - The raw product data from Supabase.
+ * @returns {Product} The transformed product object.
+ */
 function mapProductRow(product: ProductRow): Product {
   const category = getCategory(product.categories);
 
@@ -166,6 +173,13 @@ function mapProductRow(product: ProductRow): Product {
   };
 }
 
+/**
+ * A helper function to apply sorting logic to a Supabase query builder instance.
+ * It takes a sort key and dynamically adds the correct `.order()` clause.
+ * @param {T} query - The Supabase query builder.
+ * @param {ProductSort} sort - The sorting criteria.
+ * @returns {T} The query builder with the sorting clause applied.
+ */
 function applySort<
   T extends {
     order: (
@@ -472,6 +486,11 @@ export async function getCategories(): Promise<CategoriesResult> {
 
 /**
  * Returns one representative Supabase product image for each hero category.
+ * This function is optimized for the homepage hero section to quickly fetch
+ * visually appealing category images without loading full product data.
+ * It has a fallback mechanism to ensure the hero section can always render,
+ * even if the database query fails.
+ * @returns {Promise<HeroCategory[]>} A promise that resolves to an array of hero category objects.
  */
 export async function getHeroCategories(): Promise<HeroCategory[]> {
   const fallbackCategories = HERO_CATEGORY_CONFIG.map((category) => ({

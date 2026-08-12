@@ -43,11 +43,22 @@ export default function AddProductForm({ categories }: { categories: Category[] 
     },
   });
 
+  /**
+   * Handles the form submission for adding a new product.
+   * This function performs the following steps:
+   * 1. If a file is selected, it sanitizes the product name to create a unique filename.
+   * 2. It uploads the image to Supabase Storage.
+   * 3. It retrieves the public URL of the uploaded image.
+   * 4. It calls the `addProduct` server action with the complete product data.
+   * 5. It handles any errors during the process and updates the form's error state.
+   * 6. On success, it redirects the user to the product catalog with a success query parameter.
+   */
   const onSubmit = async (data: ProductData) => {
     setIsUploading(true);
     let finalImageUrl = data.image_url || null;
 
     try {
+      // If a new image file is selected, upload it to Supabase Storage.
       if (selectedFile) {
         const fileExt = selectedFile.name.split('.').pop();
 
@@ -60,6 +71,7 @@ export default function AddProductForm({ categories }: { categories: Category[] 
 
         const fileName = `${sanitizedName}-${timestamp}.${fileExt}`;
 
+        // Upload the file to the 'product-images' bucket.
         const { error: uploadError } = await supabase.storage
           .from('product-images')
           .upload(fileName, selectedFile, {
@@ -69,6 +81,7 @@ export default function AddProductForm({ categories }: { categories: Category[] 
 
         if (uploadError) throw new Error("Failed to upload image.");
 
+        // Get the public URL for the newly uploaded image.
         const { data: publicUrlData } = supabase.storage
           .from('product-images')
           .getPublicUrl(fileName);
@@ -76,11 +89,13 @@ export default function AddProductForm({ categories }: { categories: Category[] 
         finalImageUrl = publicUrlData.publicUrl;
       }
 
+      // Prepare the final product data, including the image URL.
       const finalProductData = {
         ...data,
         image_url: finalImageUrl || "",
       };
 
+      // Call the server action to add the product to the database.
       const response = await addProduct(finalProductData);
 
       if (response?.error) {
@@ -88,6 +103,7 @@ export default function AddProductForm({ categories }: { categories: Category[] 
         return;
       }
 
+      // Redirect to the product catalog page on successful creation.
       router.push('/merchant/product-catalog?product-added=true');
     } catch (error) {
       setError('root', { message: 'An unexpected error occurred while saving.' });

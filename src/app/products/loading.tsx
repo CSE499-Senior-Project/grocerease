@@ -1,10 +1,17 @@
+/**
+ * A loading skeleton component for the main product catalog page.
+ * Next.js automatically renders this component via a Suspense boundary
+ * while the data for `/products` is being fetched.
+ */
 export default function ProductsLoading() {
   return (
     <div
+      // Accessibility attributes to inform screen readers that the content is loading.
       aria-busy="true"
       aria-label="Loading product catalog"
       className="min-h-screen bg-surface-background"
     >
+      {/* Skeleton for the page header/hero section. */}
       <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
           <div className="h-8 w-36 animate-pulse rounded-full bg-slate-200" />
@@ -15,6 +22,7 @@ export default function ProductsLoading() {
         </div>
       </section>
 
+      {/* Skeleton for the main content area, including filters and product grid. */}
       <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(180px,1fr)_minmax(180px,1fr)_auto]">
@@ -51,6 +59,7 @@ export default function ProductsLoading() {
           <div className="h-9 w-36 animate-pulse rounded-full bg-slate-200" />
         </div>
 
+        {/* Skeleton grid representing the list of products. */}
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 12 }).map((_, index) => (
             <article
@@ -72,6 +81,7 @@ export default function ProductsLoading() {
           ))}
         </div>
 
+        {/* Skeleton for the pagination controls. */}
         <div className="mt-12 flex items-center justify-center gap-2">
           {Array.from({ length: 5 }).map((_, index) => (
             <div

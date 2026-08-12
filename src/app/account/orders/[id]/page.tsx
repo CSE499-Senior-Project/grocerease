@@ -10,12 +10,21 @@ export const metadata: Metadata = {
   title: "Order Details",
 };
 
+/**
+ * Defines the expected props for the OrderDetailPage component,
+ * specifically the dynamic `id` parameter from the URL.
+ */
 type OrderDetailPageProps = {
   params: Promise<{
     id: string;
   }>;
 };
 
+/**
+ * A utility function to format a date string into a more readable format.
+ * @param dateString - The ISO date string to format.
+ * @returns A formatted date string (e.g., "Aug 11, 2026").
+ */
 function formatDate(dateString: string) {
   return new Intl.DateTimeFormat("en-us", {
     month: "short",
@@ -24,10 +33,18 @@ function formatDate(dateString: string) {
   }).format(new Date(dateString));
 }
 
+/**
+ * The server component for the "Order Details" page.
+ * It fetches a specific order by its ID and displays its full details.
+ * @param {OrderDetailPageProps} props - The component props, containing the route parameters.
+ */
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
+  // Resolve the dynamic 'id' from the URL parameters.
   const { id } = await params;
+  // Fetch the specific order details for the current user.
   const order = await getCustomerOrderById(id);
 
+  // If the order is not found (or doesn't belong to the user), render a 404 page.
   if (!order) {
     notFound();
   }
@@ -35,6 +52,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   return (
     <>
       <PageTitle
+        // The action slot contains a "Go back" link to the main orders list.
         action={
           <Link
             href="/account/orders"
@@ -45,11 +63,14 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </Link>
         }
       >
+        {/* Display a truncated version of the order ID for a cleaner title. */}
         Order #{order.id.slice(-12)}
       </PageTitle>
 
+      {/* Display the formatted creation date of the order. */}
       <p className="mb-8 text-sm text-slate-500">{formatDate(order.created_at)}</p>
 
+      {/* Main grid layout for order items and the summary sidebar. */}
       <div className="grid gap-8 lg:grid-cols-[1.6fr_0.8fr]">
         <div className="space-y-4">
           {order.order_items.map((item) => (

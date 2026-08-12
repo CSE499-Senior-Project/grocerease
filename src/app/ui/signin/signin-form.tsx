@@ -20,6 +20,7 @@ import { signinUser } from '@/actions/actions';
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
+  // Checks for a 'signup=true' query parameter to show a success message after registration.
   const isSignedUp = searchParams.get('signup') === 'true';
   const pageMessage = searchParams.get('message') === 'false';
 
@@ -32,6 +33,12 @@ export default function SignInForm() {
     resolver: zodResolver(SignInSchema),
   });
 
+  /**
+   * Handles the form submission for user sign-in.
+   * It calls the `signinUser` server action with the provided credentials.
+   * If an error occurs during sign-in (e.g., invalid credentials),
+   * it sets a form error to be displayed to the user.
+   */
   const onSubmit = async (data: SignInData) => {
     const response = await signinUser(data);
 
@@ -98,6 +105,7 @@ export default function SignInForm() {
               autoComplete='current-password'
               icon={KeyIcon}
               icon2={showPassword ? EyeSlashIcon : EyeIcon}
+              // Toggles the visibility of the password field.
               onIcon2Click={() => setShowPassword(!showPassword)}
             />
             <input type='hidden' name='redirectTo' />

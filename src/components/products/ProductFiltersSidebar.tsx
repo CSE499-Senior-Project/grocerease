@@ -14,6 +14,12 @@ type ProductFiltersSidebarProps = {
   sort: ProductSort;
 };
 
+/**
+ * Builds a URL for product filtering and sorting.
+ * This helper function constructs a query string based on the provided
+ * search, category, and sort parameters, ensuring clean and consistent URLs.
+ * @returns A URL string for the products page with the correct filters.
+ */
 function buildCategoryUrl({
   search,
   category,
@@ -44,6 +50,12 @@ function buildCategoryUrl({
     : "/products";
 }
 
+/**
+ * Renders a sidebar with controls for searching, filtering by category, and sorting products.
+ * It uses the current URL search parameters to maintain state across page reloads and
+ * constructs new filter links using the `buildCategoryUrl` helper.
+ * The form allows users to apply multiple filters at once.
+ */
 export default function ProductFiltersSidebar({
   categories,
   search,
@@ -95,6 +107,7 @@ export default function ProductFiltersSidebar({
             className="mt-3 flex flex-col gap-2"
           >
             <Link
+              // Link to clear the category filter.
               href={buildCategoryUrl({
                 search,
                 category: "",
@@ -110,6 +123,7 @@ export default function ProductFiltersSidebar({
               All Products
             </Link>
 
+            {/* Renders a link for each product category. */}
             {categories.map((item) => {
               const isActive = category === item.name;
 

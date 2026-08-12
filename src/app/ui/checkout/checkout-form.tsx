@@ -14,18 +14,30 @@ import AddressForm from "@/app/ui/addresses/address-form";
 import { placeOrder } from "@/actions/actions";
 import z from "zod";
 
+// Define a Zod schema for just the fields this form is responsible for validating.
 const FormSchema = CheckoutSchema.pick({
   delivery_address: true,
   delivery_time_slot: true,
 });
 
+// Infer the TypeScript type from the Zod schema.
 type FormData = z.infer<typeof FormSchema>;
 
+/**
+ * Defines the props for the CheckoutForm component.
+ */
 interface CheckoutFormProps {
+  // A callback function to be called when the order is successfully placed.
   onComplete: () => void;
+  // The initial list of user addresses passed from the parent server component.
   addresses: Address[];
 }
 
+/**
+ * The main form component for the checkout process. It handles address selection,
+ * delivery options, payment, and final submission.
+ * @param {CheckoutFormProps} props - The component props.
+ */
 export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProps) {
   const {
     handleSubmit,
@@ -35,6 +47,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(FormSchema),
+    // Set default values, using the user's default address if available.
     defaultValues: {
       delivery_address: addresses.find(a => a.is_default)?.id || "",
       delivery_time_slot: "",
@@ -54,12 +67,14 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
   const { cartItems, cartCount, cartTotal, clearCart } = useCart();
   const router = useRouter();
   
+  // State to toggle the "Add Address" form view.
   const [isAddingAddress, setIsAddingAddress] = useState(false);
 
   const [deliveryDay, setDeliveryDay] = useState<"today" | "tomorrow">("today");
   const [isAsap, setIsAsap] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery">("card");  
 
+  // Memoize the calculation of available delivery slots to avoid re-computing on every render.
   const availableSlots = useMemo(() => {
     const slots: Date[] = [];
     const now = new Date();
@@ -73,6 +88,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
       const slotTime = new Date(targetDate);
       slotTime.setHours(hour, 0, 0, 0);
 
+      // A slot is only available today if it's at least 3 hours in the future.
       if (deliveryDay === "today" && slotTime.getTime() <= now.getTime() + 3 * 60 * 60 * 1000) {
         continue;
       }
@@ -81,6 +97,9 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
     return slots;
   }, [deliveryDay]);
 
+  /**
+   * Formats a Date object into a "StartTime - EndTime" string.
+   */
   const formatSlotLabel = (date: Date) => {
     const startTime = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     
@@ -91,6 +110,9 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
     return `${startTime} - ${endTime}`;
   };
 
+  /**
+   * Handles the "ASAP" button click, setting the time slot to one hour from now.
+   */
   const handleAsapClick = () => {
     setIsAsap(true);
     const asapTime = new Date();
@@ -98,6 +120,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
     setValue("delivery_time_slot", asapTime.toISOString(), { shouldValidate: true });
   };
 
+  // Calculate order costs.
   const baseDeliveryFee = cartTotal > 40 ? 0 : 4.99;
   const premiumFee = isAsap ? 10.00 : 0;
   const deliveryFee = baseDeliveryFee + premiumFee;
@@ -105,6 +128,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
   const taxAmount = cartTotal * taxRate;
   const finalTotal = cartTotal + deliveryFee + taxAmount;
 
+  // Memoize the order summary to prevent re-mapping on every render.
   const orderSummary = useMemo(
     () =>
       cartItems.map((item) => ({
@@ -116,14 +140,23 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
     [cartItems]
   );
 
+  /**
+   * Callback for when a new address is successfully added.
+   * It closes the form and refreshes the page data to show the new address.
+   */
   function handleAddressAdded() {
     setIsAddingAddress(false);
     router.refresh(); 
   }
 
+  /**
+   * Handles the final form submission.
+   * It constructs the full order payload and calls the `placeOrder` server action.
+   */
   const onSubmit = async (data: FormData) => {
     const selectedAddress = addresses.find((a) => a.id === data.delivery_address);
 
+    // Construct a full, human-readable address string for the order record.
     const absoluteAddress = selectedAddress
       ? `${selectedAddress.address_1}, ${
         selectedAddress.address_2 ? selectedAddress.address_2 + ", " : ""
@@ -136,6 +169,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
       price_at_time: item.price,
     }));
 
+    // Combine form data with calculated costs and items into the final payload.
     const finalPayload = {
       ...data,
       delivery_address: absoluteAddress,
@@ -148,11 +182,13 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
 
     const response = await placeOrder(finalPayload);
 
+    // If the server action returns an error, display it.
     if (response?.error) {
       setError("root", { message: response.error });
       return;
     }
 
+    // On success, clear the cart and call the onComplete callback to show the success screen.
     clearCart();
     onComplete();
   }
@@ -163,6 +199,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
         
         <div className="flex flex-col gap-10 self-start lg:col-span-8">
           
+          {/* Section 1: Delivery Address */}
           <section>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-slate-900">1. Delivery address</h2>
@@ -185,6 +222,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
                 </p>
               )}
 
+              {/* Conditionally render the AddressForm or the AddressList. */}
               {isAddingAddress ? (
                 <AddressForm 
                   onSuccess={handleAddressAdded} 
@@ -205,10 +243,12 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
             </div>
           </section>
 
+          {/* Section 2: Delivery Options */}
           <section>
             <h2 className="mb-4 text-2xl font-bold text-slate-900">2. Delivery options</h2>
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               
+              {/* Tabs for selecting "Today" or "Tomorrow". */}
               <div className="mb-6 flex gap-4 border-b border-slate-200 pb-4">
                 <button
                   type="button"
@@ -242,6 +282,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
                 </button>
               </div>
 
+              {/* "ASAP" option, only available for today's deliveries before 8 PM. */}
               {deliveryDay === "today" && (
                 <div className="mb-6 border-b border-slate-200 pb-6">
                   <h3 className="mb-3 text-sm font-semibold text-slate-700">Need it right away?</h3>
@@ -273,6 +314,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
                 </div>
               )}
 
+              {/* Grid of available standard delivery time slots. */}
               <h3 className="mb-3 text-sm font-semibold text-slate-700">Standard Delivery</h3>
               {availableSlots.length === 0 ? (
                 <p className="text-sm text-slate-500">No delivery slots remaining for today. Please select tomorrow.</p>
@@ -310,11 +352,13 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
             </div>
           </section>
 
+          {/* Section 3: Payment Method */}
           <section>
             <h2 className="mb-4 text-2xl font-bold text-slate-900">3. Payment method</h2>
             
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="grid gap-4 sm:grid-cols-2">
+                {/* Credit Card payment option. */}
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
@@ -331,6 +375,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
                   </div>
                 </button>
 
+                {/* Pay on Delivery option. */}
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("delivery")}
@@ -348,6 +393,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
                 </button>
               </div>
               
+              {/* Mock payment notice. */}
               {paymentMethod === "card" && (
                 <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
                   <p>This is a mock checkout. No real payment information is required.</p>
@@ -358,12 +404,14 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
 
         </div>
 
+        {/* Order Summary Sidebar */}
         <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm self-start lg:col-span-4">
           <h2 className="text-xl font-semibold text-slate-900">Your order</h2>
           <p className="mt-2 text-sm text-slate-600">
             {cartCount} {cartCount === 1 ? "item" : "items"} in your basket
           </p>
 
+          {/* List of items in the cart. */}
           <div className="mt-6 space-y-3">
             {orderSummary.map((item) => (
               <div key={item.id} className="flex items-center justify-between text-sm text-slate-700">
@@ -373,6 +421,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
             ))}
           </div>
 
+          {/* Breakdown of all costs. */}
           <div className="mt-6 space-y-3 border-t border-slate-200 pt-4 text-sm text-slate-600">
             <div className="flex items-center justify-between">
               <span>Subtotal</span>
@@ -392,12 +441,14 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
             </div>
           </div>
 
+          {/* Display for any root-level form errors from the server action. */}
           {errors.root && (
             <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {errors.root.message}
             </div>
           )}
 
+          {/* Main submission button. */}
           <button
             type="submit"
             onClick={handleSubmit(onSubmit)}
@@ -407,6 +458,7 @@ export default function CheckoutForm({ onComplete, addresses }: CheckoutFormProp
             {isSubmitting ? "Placing order..." : "Place order"}
           </button>
           
+          {/* Link to go back to the cart page. */}
           <Link
             href="/cart"
             className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-700 transition-colors hover:border-brand-primary hover:text-brand-primary"

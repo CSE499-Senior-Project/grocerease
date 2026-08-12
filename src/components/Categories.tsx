@@ -33,6 +33,11 @@ const categories = [
   },
 ];
 
+/**
+ * A static presentational component for the homepage that displays a grid of product categories.
+ * Each category card includes an emoji, a name, a description, and a link to
+ * the corresponding filtered product page.
+ */
 export default function Categories() {
   return (
     <section id="categories" className="bg-white py-20 sm:py-24">

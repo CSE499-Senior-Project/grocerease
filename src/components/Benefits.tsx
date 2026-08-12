@@ -25,6 +25,11 @@ const benefits = [
   },
 ];
 
+/**
+ * A static presentational component for the homepage.
+ * It displays a grid of cards, each highlighting a key benefit of the GrocerEase platform,
+ * such as fresh products, fast delivery, and supporting local stores.
+ */
 export default function Benefits() {
   return (
     <section
