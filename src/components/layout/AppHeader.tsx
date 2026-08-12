@@ -30,9 +30,17 @@ export default function AppHeader({
    * This effect ensures the header UI updates in real-time when a user signs in or out on any tab.
    */
   useEffect(() => {
+    // Immediately check the local session on mount to override any cached server state
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setIsSignedIn(!!data.session);
+    };
+    checkSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsSignedIn(!!session);
     });
+
     return () => {
       subscription.unsubscribe();
     };
