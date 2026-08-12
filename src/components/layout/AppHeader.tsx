@@ -19,9 +19,17 @@ export default function AppHeader({
   const supabase = createClient();
 
   useEffect(() => {
+    // Immediately check the local session on mount to override any cached server state
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setIsSignedIn(!!data.session);
+    };
+    checkSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsSignedIn(!!session);
     });
+
     return () => {
       subscription.unsubscribe();
     };
