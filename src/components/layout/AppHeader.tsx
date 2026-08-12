@@ -7,6 +7,7 @@ import SignOutButton from "../SignOutButton";
 import { useCart } from "@/context/CartContext";
 import Logo from "@/components/layout/Logo";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function AppHeader({
   initialIsSignedIn,
@@ -17,23 +18,34 @@ export default function AppHeader({
 }) {
   const [isSignedIn, setIsSignedIn] = useState(initialIsSignedIn);
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     // Immediately check the local session on mount to override any cached server state
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
-      setIsSignedIn(!!data.session);
+
+      // The magic check: If the browser is logged in, but the server missed it...
+      if (data.session && !initialIsSignedIn) {
+        router.refresh(); // Force the server to fetch name and layout
+      } else {
+        setIsSignedIn(!!data.session);
+      }
     };
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsSignedIn(!!session);
+      if (session && !initialIsSignedIn) {
+        router.refresh();
+      } else {
+        setIsSignedIn(!!session);
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+  }, [initialIsSignedIn, router, supabase.auth]);
 
   const { cartCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -105,7 +117,7 @@ export default function AppHeader({
                 aria-label="Account menu"
                 aria-expanded={isMenuOpen}
                 onClick={() => setIsMenuOpen((open) => !open)}
-                className="flex items-center gap-2 text-slate-700 transition-colors hover:text-brand-primary"
+                className="cursor-pointer flex items-center gap-2 text-slate-700 transition-colors hover:text-brand-primary"
               >
                 <User className="h-6 w-6" />
                 {firstName && <span className="font-medium">Hi, {firstName}</span>}
