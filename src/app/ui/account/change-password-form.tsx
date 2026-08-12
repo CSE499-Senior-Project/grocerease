@@ -11,9 +11,14 @@ import { changePassword } from '@/actions/actions';
 import AccountCard from '@/app/ui/account/account-card';
 import PageTitle from '@/app/ui/account/page-title';
 
+/**
+ * A client component that renders a form for users to change their password.
+ * It validates input and calls a server action to perform the update.
+ */
 export default function ChangePasswordForm() {
   const router = useRouter();
   const [showCurrent, setShowCurrent] = useState(false);
+  // State to manage visibility for the new and confirm password fields.
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -24,12 +29,18 @@ export default function ChangePasswordForm() {
     reset,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm<ChangePasswordData>({
+    // Use Zod for schema-based validation, including password confirmation.
     resolver: zodResolver(ChangePasswordSchema),
   });
 
+  /**
+   * Handles the form submission by calling the `changePassword` server action.
+   * @param {ChangePasswordData} data - The validated form data.
+   */
   const onSubmit = async (data: ChangePasswordData) => {
     const response = await changePassword(data);
 
+    // If the server action returns an error, display it.
     if (response?.error) {
       if (response.field === 'current_password') {
         setError('current_password', { message: response.error });
@@ -39,6 +50,7 @@ export default function ChangePasswordForm() {
       return;
     }
 
+    // On success, reset the form fields.
     reset();
   };
 
@@ -51,12 +63,14 @@ export default function ChangePasswordForm() {
           Enter your current password and choose a new one.
         </p>
 
+        {/* Display a global error message if the server action fails. */}
         {errors.root && (
           <div className='mb-6 rounded-md border border-red-200 bg-red-50 p-4'>
             <p className='text-sm font-medium text-red-800'>{errors.root.message}</p>
           </div>
         )}
 
+        {/* Display a success message when the password is changed. */}
         {isSubmitSuccessful && !errors.root && (
           <div className='mb-6 rounded-md border border-green-200 bg-green-50 p-4'>
             <p className='text-sm font-medium text-green-800'>Password updated successfully.</p>
@@ -64,6 +78,7 @@ export default function ChangePasswordForm() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
+          {/* Input for the user's current password with a show/hide toggle. */}
           <FormInput
             label='Current Password'
             name='current_password'
@@ -77,6 +92,7 @@ export default function ChangePasswordForm() {
             onIcon2Click={() => setShowCurrent(!showCurrent)}
             uppercase={false}
           />
+          {/* Input for the new password. */}
           <FormInput
             label='New Password'
             name='new_password'
@@ -90,6 +106,7 @@ export default function ChangePasswordForm() {
             onIcon2Click={() => setShowNew(!showNew)}
             uppercase={false}
           />
+          {/* Input to confirm the new password. */}
           <FormInput
             label='Confirm New Password'
             name='confirm_new_password'
@@ -104,6 +121,7 @@ export default function ChangePasswordForm() {
             uppercase={false}
           />
 
+          {/* Form action buttons. */}
           <div className='mt-6 flex gap-3'>
             <button
               type='button'

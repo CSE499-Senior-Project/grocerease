@@ -18,6 +18,11 @@ import {
 import { createClient } from "@/utils/supabase/server";
 import { CheckoutData, CheckoutSchema } from "@/types/order";
 
+/**
+ * Signs up a new user.
+ * @param data - The user's sign-up information (first name, last name, email, password).
+ * @returns An object with an `error` message on failure. Redirects on success.
+ */
 export async function signupUser(data: SignUpData) {
   try {
     const supabase = await createClient();
@@ -37,6 +42,7 @@ export async function signupUser(data: SignUpData) {
       return { error: error.message };
     }
 
+    // Sign out the user immediately after signup to enforce email verification.
     await supabase.auth.signOut();
   }
   catch (error) {
@@ -47,6 +53,11 @@ export async function signupUser(data: SignUpData) {
   redirect('/signin?signup=true');
 }
 
+/**
+ * Signs in a user with their email and password.
+ * @param data - The user's sign-in credentials.
+ * @returns An object with an `error` message on failure. Redirects on success.
+ */
 export async function signinUser(data: SignInData) {
   try {
     const supabase = await createClient();
@@ -65,6 +76,9 @@ export async function signinUser(data: SignInData) {
   redirect('/'); // once the user profile page is up, redirect to that page.
 }
 
+/**
+ * Signs out the currently authenticated user.
+ */
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
@@ -73,6 +87,11 @@ export async function signOut() {
   redirect('/signin');
 }
 
+/**
+ * Updates the profile information for the currently signed-in user.
+ * @param data - The profile data to update.
+ * @returns An object with a `success` flag or an `error` message.
+ */
 export async function updateProfile(data: ProfileUpdateData) {
   const parsed = ProfileUpdateSchema.safeParse(data);
   if (!parsed.success) {
@@ -109,6 +128,11 @@ export async function updateProfile(data: ProfileUpdateData) {
   return { success: true };
 }
 
+/**
+ * Changes the password for the currently signed-in user.
+ * @param data - The current and new password data.
+ * @returns An object with a `success` flag or an `error` message.
+ */
 export async function changePassword(data: ChangePasswordData) {
   const parsed = ChangePasswordSchema.safeParse(data);
   if (!parsed.success) {
@@ -123,6 +147,7 @@ export async function changePassword(data: ChangePasswordData) {
       return { error: "Not signed in." };
     }
 
+    // Verify the current password by attempting to sign in with it.
     const { error: verifyError } = await supabase.auth.signInWithPassword({
       email: user.email,
       password: parsed.data.current_password,
@@ -132,6 +157,7 @@ export async function changePassword(data: ChangePasswordData) {
       return { error: "Current password is incorrect.", field: "current_password" as const };
     }
 
+    // If verification is successful, update the user's password.
     const { error } = await supabase.auth.updateUser({ password: parsed.data.new_password });
 
     if (error) {
@@ -145,6 +171,11 @@ export async function changePassword(data: ChangePasswordData) {
   return { success: true };
 }
 
+/**
+ * Adds a new product to the catalog.
+ * @param data - The data for the new product.
+ * @returns An object with a `success` flag or an `error` message.
+ */
 export async function addProduct(data: ProductData) {
   try {
     const supabase = await createClient();
@@ -177,6 +208,11 @@ export async function addProduct(data: ProductData) {
   return { success: true };
 }
 
+/**
+ * Edits an existing product in the catalog.
+ * @param data - The updated data for the product, including its ID.
+ * @returns An object with a `success` flag or an `error` message.
+ */
 export async function editProduct(data: EditProductData) {
   const parsed = EditProductSchema.safeParse(data);
 
@@ -217,6 +253,11 @@ export async function editProduct(data: EditProductData) {
   }
 }
 
+/**
+ * Places a new order for the currently signed-in user.
+ * @param data - The checkout data, including items and totals.
+ * @returns An object with a `success` flag or an `error` message.
+ */
 export async function placeOrder(data: CheckoutData) {
   try {
     const supabase = await createClient();
@@ -235,6 +276,7 @@ export async function placeOrder(data: CheckoutData) {
       return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
     }
 
+    // Insert the main order record.
     const { data: newOrder, error: orderError } = await supabase
       .from('orders')
       .insert({
@@ -253,6 +295,7 @@ export async function placeOrder(data: CheckoutData) {
       return { error: orderError?.message || "Failed to create order." };
     }
 
+    // Prepare the individual order items for insertion.
     const orderItems = parsed.data.items.map((item) => ({
       order_id: newOrder.id,
       product_id: item.product_id,
@@ -260,6 +303,7 @@ export async function placeOrder(data: CheckoutData) {
       price_at_time: item.price_at_time
     }));
 
+    // Insert all order items.
     const { error: itemsError } = await supabase
       .from('order_items')
       .insert(orderItems);

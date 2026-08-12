@@ -7,15 +7,27 @@ import { useCart } from "@/context/CartContext";
 import CheckoutForm from "./checkout-form";
 import type { Address } from "@/types/address";
 
+/**
+ * Defines the props for the CheckoutOrder component.
+ */
 interface CheckoutOrderProps {
+  // An array of the user's saved addresses, fetched on the server.
   initialAddresses: Address[];
 }
 
+/**
+ * A client component that orchestrates the entire checkout flow.
+ * It manages the state to display either the checkout form, a success message,
+ * or an empty cart message.
+ * @param {CheckoutOrderProps} props - The component props.
+ */
 export default function CheckoutOrder({ initialAddresses }: CheckoutOrderProps) {
   const { cartItems } = useCart();
+  // State to track if the order has been successfully placed.
   const [isComplete, setIsComplete] = useState(false);
 
   
+  // If the order is complete, show the success/confirmation screen.
   if (isComplete) {
     return (
       <section className="mx-auto flex min-h-[70vh] max-w-5xl flex-col items-center justify-center px-6 py-20 text-center lg:px-8">
@@ -46,6 +58,7 @@ export default function CheckoutOrder({ initialAddresses }: CheckoutOrderProps) 
     );
   }
 
+  // If the cart is empty, prompt the user to add items before checking out.
   if (cartItems.length === 0) {
     return (
       <section className="mx-auto flex min-h-[70vh] max-w-5xl flex-col items-center justify-center px-6 py-20 text-center lg:px-8">
@@ -69,6 +82,7 @@ export default function CheckoutOrder({ initialAddresses }: CheckoutOrderProps) 
     );
   }
 
+  // If the cart has items and the order is not yet complete, render the main checkout form.
   return (
     <section className="mx-auto w-full max-w-7xl px-6 py-12 lg:px-8">
       <div className="mb-8">
@@ -82,6 +96,7 @@ export default function CheckoutOrder({ initialAddresses }: CheckoutOrderProps) 
 
       <div>
         <CheckoutForm 
+          // Pass a callback to update the state when the form submission is successful.
           onComplete={() => setIsComplete(true)} 
           addresses={initialAddresses}  
         />

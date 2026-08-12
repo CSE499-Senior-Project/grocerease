@@ -10,6 +10,13 @@ type ProductPaginationProps = {
   totalPages: number;
 };
 
+/**
+ * Builds a URL for product catalog pagination.
+ * This helper function constructs a query string that preserves the existing
+ * search, category, and sort filters while updating the page number.
+ * @param props - The current filter and pagination state.
+ * @returns A URL string for a specific page in the product catalog.
+ */
 function buildProductsUrl({
   search,
   category,
@@ -41,6 +48,12 @@ function buildProductsUrl({
     : "/products";
 }
 
+/**
+ * Renders pagination links for the product catalog.
+ * It displays "Previous" and "Next" buttons and page number links,
+ * allowing users to navigate through the available product pages.
+ * The component does not render if there is only one page of results.
+ */
 export default function ProductPagination({
   search,
   category,
@@ -72,6 +85,7 @@ export default function ProductPagination({
         </Link>
       )}
 
+      {/* Generates a link for each page number. */}
       {Array.from(
         { length: totalPages },
         (_, index) => index + 1,

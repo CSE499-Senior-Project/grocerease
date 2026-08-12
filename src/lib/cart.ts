@@ -49,6 +49,12 @@ export type RemoteCartResult = {
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+/**
+ * A helper to safely extract a single related record from a Supabase query result,
+ * which might be null, a single object, or an array of objects.
+ * @param {T | T[] | null} relation - The Supabase relation data.
+ * @returns {T | null} The single related record or null.
+ */
 function getSingleRelation<T>(
   relation: T | T[] | null,
 ): T | null {
@@ -63,6 +69,13 @@ function getSingleRelation<T>(
   return relation;
 }
 
+/**
+ * Maps a `cart_items` row from Supabase to the application's `SyncedCartItem` type.
+ * It handles data validation, transformation (e.g., price to number), and ensures
+ * that only active, in-stock products are included in the cart.
+ * @param {CartItemRow} row - The raw cart item data from Supabase.
+ * @returns {SyncedCartItem | null} The transformed cart item or null if invalid.
+ */
 function mapCartItemRow(
   row: CartItemRow,
 ): SyncedCartItem | null {
@@ -100,6 +113,14 @@ function mapCartItemRow(
   };
 }
 
+/**
+ * Ensures a cart exists for the given user in the Supabase `carts` table.
+ * It uses an `upsert` operation with `onConflict` to either find the existing cart
+ * or create a new one in a single, atomic database call.
+ * @param {BrowserSupabaseClient} supabase - The Supabase client instance.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<string>} A promise that resolves to the user's cart ID.
+ */
 async function getOrCreateCartId(
   supabase: BrowserSupabaseClient,
   userId: string,
@@ -126,6 +147,14 @@ async function getOrCreateCartId(
   return data.id as string;
 }
 
+/**
+ * Loads the user's cart from Supabase.
+ * It first ensures a cart ID exists, then fetches all associated cart items and their
+ * related product data.
+ * @param {BrowserSupabaseClient} supabase - The Supabase client instance.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<RemoteCartResult>} A promise resolving to the cart ID and its items.
+ */
 export async function loadRemoteCart(
   supabase: BrowserSupabaseClient,
   userId: string,
@@ -175,6 +204,15 @@ export async function loadRemoteCart(
   };
 }
 
+/**
+ * Merges two arrays of cart items into a single array.
+ * It handles combining quantities for duplicate products based on the specified mode.
+ * 'max' mode takes the highest quantity, while 'add' mode sums them.
+ * @param {SyncedCartItem[]} currentItems - The base array of items.
+ * @param {SyncedCartItem[]} incomingItems - The array of items to merge in.
+ * @param {"add" | "max"} mode - The strategy for merging quantities.
+ * @returns {SyncedCartItem[]} The new, merged array of cart items.
+ */
 export function mergeCartItems(
   currentItems: SyncedCartItem[],
   incomingItems: SyncedCartItem[],
@@ -222,6 +260,17 @@ export function mergeCartItems(
   return Array.from(mergedItems.values());
 }
 
+/**
+ * Synchronizes the local cart state with the remote Supabase cart.
+ * This function performs a three-way merge:
+ * 1. It identifies items to add (present locally, not remotely).
+ * 2. It identifies items to update (present in both, but with different quantities).
+ * 3. It identifies items to delete (present remotely, not locally).
+ * This ensures the remote cart perfectly mirrors the local state.
+ * @param {BrowserSupabaseClient} supabase - The Supabase client instance.
+ * @param {string} cartId - The ID of the cart to synchronize.
+ * @param {SyncedCartItem[]} cartItems - The current local array of cart items.
+ */
 export async function syncRemoteCart(
   supabase: BrowserSupabaseClient,
   cartId: string,

@@ -3,6 +3,12 @@ import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { getFeaturedProducts } from "@/lib/products";
 
+/**
+ * A server component that fetches and displays a list of featured products.
+ * It calls the `getFeaturedProducts` function to retrieve data.
+ * It includes robust state handling, displaying an error message if the fetch fails,
+ * a "no products" message if none are available, or the grid of product cards on success.
+ */
 export default async function FeaturedProducts() {
   const { products, error } = await getFeaturedProducts(8);
 
@@ -36,6 +42,7 @@ export default async function FeaturedProducts() {
           </Link>
         </div>
 
+        {/* Renders the appropriate UI based on whether there was an error, no products, or products were found. */}
         {error ? (
           <div
             role="alert"

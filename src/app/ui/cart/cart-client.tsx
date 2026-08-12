@@ -7,13 +7,23 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { createClient } from "@/utils/supabase/client";
 
+/**
+ * A client component that renders the user's shopping cart.
+ * It displays cart items, allows for quantity adjustments, and provides a summary
+ * with a path to checkout.
+ */
 export default function CartClient() {
   const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
   const router = useRouter();
 
+  // Business logic for delivery fee.
   const deliveryFee = cartTotal > 40 ? 0 : 4.99;
   const totalWithDelivery = cartTotal + deliveryFee;
 
+  /**
+   * Handles the checkout process. It checks if the user is authenticated
+   * and redirects them to the sign-in page if not, otherwise proceeds to checkout.
+   */
   async function handleCheckout() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -25,6 +35,7 @@ export default function CartClient() {
     router.push('/checkout');
   }
 
+  // If the cart is empty, display a message and links to browse products.
   if (cartItems.length === 0) {
     return (
       <section className="mx-auto flex min-h-[70vh] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center lg:px-8">
@@ -55,6 +66,7 @@ export default function CartClient() {
     );
   }
 
+  // If the cart has items, render the full cart view.
   return (
     <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -76,9 +88,10 @@ export default function CartClient() {
         </button>
       </div>
 
-      {/* 12-column grid applied here */}
+      {/* Main grid for cart items and the order summary sidebar. */}
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="space-y-4 lg:col-span-8">
+          {/* Map over cart items and render a card for each one. */}
           {cartItems.map((item) => (
             <article
               key={item.id}
@@ -104,6 +117,7 @@ export default function CartClient() {
                   </p>
                 </div>
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+                  {/* Quantity adjustment controls. */}
                   <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-1">
                     <button
                       type="button"
@@ -125,6 +139,7 @@ export default function CartClient() {
                       <Plus className="h-4 w-4" />
                     </button>
                   </div>
+                  {/* Button to remove the item from the cart. */}
                   <button
                     type="button"
                     onClick={() => removeFromCart(item.id)}
@@ -139,7 +154,7 @@ export default function CartClient() {
           ))}
         </div>
 
-        {/* 4-column span applied to the aside */}
+        {/* Order summary sidebar. */}
         <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm self-start lg:col-span-4">
           <h2 className="text-xl font-semibold text-slate-900">Order summary</h2>
           <div className="mt-6 space-y-3 text-sm text-slate-600">

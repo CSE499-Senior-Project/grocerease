@@ -11,6 +11,12 @@ interface ProductDetailsProps {
   product: Product;
 }
 
+/**
+ * Renders the detailed view of a single product.
+ * This component displays the product's image, name, price, description, and stock status.
+ * It includes controls for the user to select a quantity and add the product to their cart,
+ * interacting with the `CartContext` to manage cart state.
+ */
 export default function ProductDetails({
   product,
 }: ProductDetailsProps) {
@@ -44,6 +50,11 @@ export default function ProductDetails({
     );
   }
 
+  /**
+   * Handles adding the selected quantity of the product to the cart.
+   * It calls the `addToCart` function from the `CartContext` and displays
+   * a temporary confirmation message to the user.
+   */
   function handleAddToCart() {
     if (!product.inStock) {
       return;

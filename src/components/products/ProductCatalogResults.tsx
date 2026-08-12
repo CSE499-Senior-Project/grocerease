@@ -12,6 +12,14 @@ type ProductCatalogResultsProps = {
   productsError: string | null;
 };
 
+/**
+ * Displays the results of the product catalog query.
+ * This component renders the list of product cards. It also handles and displays
+ * different states:
+ * - A summary of the number of products shown.
+ * - An error message if products fail to load.
+ * - A "No products found" message if the query returns no results.
+ */
 export default function ProductCatalogResults({
   products,
   count,
@@ -42,6 +50,7 @@ export default function ProductCatalogResults({
         )}
       </div>
 
+      {/* Displays an error message if there was a problem fetching products. */}
       {productsError ? (
         <div
           role="alert"
@@ -62,6 +71,7 @@ export default function ProductCatalogResults({
             Try again
           </Link>
         </div>
+      // Displays a message when no products match the current filters.
       ) : products.length === 0 ? (
         <div className="mt-10 rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center">
           <h2 className="text-2xl font-bold text-slate-900">
@@ -80,6 +90,7 @@ export default function ProductCatalogResults({
             View all products
           </Link>
         </div>
+      // Renders the grid of product cards if products are available.
       ) : (
         <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {products.map((product) => (

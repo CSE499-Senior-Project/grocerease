@@ -1,7 +1,20 @@
 import AccountCard from '@/app/ui/account/account-card';
 import PageTitle from '@/app/ui/account/page-title';
 
-export default function ComingSoon({ title }: { title: string }) {
+/**
+ * Defines the props for the ComingSoon component.
+ */
+interface ComingSoonProps {
+  // The title of the feature that is coming soon.
+  title: string;
+}
+
+/**
+ * A placeholder component to indicate that a feature is not yet available.
+ * It displays the feature's title and a "Coming soon" message inside a card.
+ * @param {ComingSoonProps} props - The component props.
+ */
+export default function ComingSoon({ title }: ComingSoonProps) {
   return (
     <>
       <PageTitle>{title}</PageTitle>

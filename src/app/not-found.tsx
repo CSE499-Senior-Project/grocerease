@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+/**
+ * Renders the 404 Not Found page.
+ * This component is automatically displayed by Next.js when a route is not matched.
+ * It provides a user-friendly message and navigation links to help the user
+ * find their way back to existing parts of the application.
+ */
 export default function NotFound() {
   return (
     <section className="flex w-full flex-1 items-center justify-center px-4 py-12 sm:px-6">
@@ -24,6 +30,7 @@ export default function NotFound() {
           may no longer be available.
         </p>
 
+        {/* Provides navigation options for the user to recover from the 404 error. */}
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
             href="/"
