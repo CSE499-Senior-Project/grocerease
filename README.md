@@ -28,3 +28,10 @@ The project utilizes a modern client-server web architecture. The client is a hi
 Rather than adhering to rigid, siloed roles, our team adopted a flexible, agile workflow. We collaborated dynamically by assigning specific features to one another. Each team member took full ownership of their assigned features, driving them from backend logic and database integration all the way through to frontend implementation and UI refinement.
 
 ![](https://geps.dev/progress/96)
+
+# Project Roadmap
+
+Current Progress:
+
+![](https://geps.dev/progress/100)
+
