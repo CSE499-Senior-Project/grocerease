@@ -23,6 +23,10 @@ export default function OrderStatusStepper({ orderId, currentStatus }: OrderStat
     formState: { isSubmitting, errors },
   } = useForm<FormData>();
 
+  /**
+   * Handles the form submission to update the order status.
+   * It calls a server action `updateOrderStatus` with the order ID and the new status.
+   */
   const onSubmit = async (data: FormData) => {
     const response = await updateOrderStatus(orderId, data.status);
 
@@ -43,11 +47,13 @@ export default function OrderStatusStepper({ orderId, currentStatus }: OrderStat
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full items-center gap-2 overflow-x-auto pb-2 xl:pb-0 scrollbar-hide"
       >
+        {/* Renders a button for each possible status step. */}
         {STATUS_STEPS.map((step, index) => {
           const currentIdx = STATUS_STEPS.indexOf(currentStatus);
           const isPast = index < currentIdx;
           const isCurrent = index === currentIdx;
 
+          // Dynamically determines button styling based on its relation to the current status.
           let buttonClasses =
             "shrink-0 rounded-full border-2 px-4 py-2 text-sm font-bold capitalize transition-all ";
 
@@ -62,9 +68,10 @@ export default function OrderStatusStepper({ orderId, currentStatus }: OrderStat
           }
 
           return (
-            <div key={step} className="flex items-center gap-2">
+            <div key={step} className="flex shrink-0 items-center gap-2">
               <button
                 type="submit"
+                // On click, the form's 'status' value is set, and the form is submitted.
                 onClick={() => setValue("status", step)}
                 disabled={isCurrent || isSubmitting}
                 className={buttonClasses}
@@ -73,6 +80,7 @@ export default function OrderStatusStepper({ orderId, currentStatus }: OrderStat
                 {step}
               </button>
 
+              {/* Renders a connector line between status steps. */}
               {index < STATUS_STEPS.length - 1 && (
                 <div
                   className={`h-0.5 w-4 sm:w-6 rounded-full ${
@@ -87,5 +95,3 @@ export default function OrderStatusStepper({ orderId, currentStatus }: OrderStat
     </div>
   );
 }
-
-

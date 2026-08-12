@@ -1,3 +1,9 @@
+/**
+ * Renders a skeleton loading state for the featured products section.
+ * This component provides a visual placeholder while the actual product data is being fetched,
+ * improving the user experience by indicating that content is on its way.
+ * It is marked with `aria-busy="true"` for better accessibility.
+ */
 export default function FeaturedProductsSkeleton() {
   return (
     <section

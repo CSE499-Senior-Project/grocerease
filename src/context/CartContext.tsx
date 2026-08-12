@@ -51,6 +51,12 @@ function getUserCartStorageKey(userId: string) {
   return `grocerease:cart:${userId}`;
 }
 
+/**
+ * A type guard to validate that an item read from storage has the expected structure of a CartItem.
+ * This prevents runtime errors from malformed data in localStorage.
+ * @param item - The item to check.
+ * @returns {boolean} - True if the item is a valid CartItem.
+ */
 function isStoredCartItem(item: unknown): item is CartItem {
   if (
     typeof item !== "object" ||
@@ -74,6 +80,11 @@ function isStoredCartItem(item: unknown): item is CartItem {
   );
 }
 
+/**
+ * Reads and parses the cart items from localStorage for a given storage key.
+ * @param {string} storageKey - The key to read from localStorage.
+ * @returns {CartItem[]} - An array of cart items, or an empty array if not found or invalid.
+ */
 function readStoredCart(
   storageKey: string,
 ): CartItem[] {
@@ -102,6 +113,11 @@ function readStoredCart(
   }
 }
 
+/**
+ * Writes the current cart items to localStorage.
+ * @param {string} storageKey - The key to write to in localStorage.
+ * @param {CartItem[]} cartItems - The array of cart items to store.
+ */
 function writeStoredCart(
   storageKey: string,
   cartItems: CartItem[],
@@ -119,6 +135,15 @@ function writeStoredCart(
   }
 }
 
+/**
+ * Provides a cart context to the application. It manages the shopping cart's state,
+ * including adding, removing, and updating items.
+ *
+ * Core functionalities:
+ * - Initializes cart from localStorage for guests or merges local and remote (Supabase) carts for signed-in users.
+ * - Persists cart changes to localStorage.
+ * - Debounces and queues synchronization of the cart with the Supabase backend for authenticated users.
+ */
 export function CartProvider({
   children,
   initialUserId = null,
@@ -137,6 +162,15 @@ export function CartProvider({
     Promise.resolve(),
   );
 
+  /**
+   * This effect handles the initial loading and hydration of the cart.
+   * - For guest users, it loads the cart from guest-specific localStorage.
+   * - For authenticated users, it performs a multi-step merge:
+   *   1. Fetches the user's cart from Supabase.
+   *   2. Merges the remote cart with any locally cached user cart.
+   *   3. Merges the result with any items from the guest cart (from before sign-in).
+   *   4. Synchronizes the final merged cart back to Supabase and clears the guest cart.
+   */
   useEffect(() => {
     let isCancelled = false;
 
@@ -248,6 +282,13 @@ export function CartProvider({
     };
   }, [initialUserId]);
 
+  /**
+   * This effect is responsible for persisting cart changes.
+   * - It writes the current `cartItems` to the active localStorage key whenever they change.
+   * - For authenticated users, it schedules a debounced synchronization to the Supabase backend.
+   * - A promise queue (`syncQueueRef`) is used to ensure that multiple rapid updates
+   *   are sent sequentially, preventing race conditions.
+   */
   useEffect(() => {
     if (!isHydrated) {
       return;
@@ -299,6 +340,11 @@ export function CartProvider({
     remoteCartId,
   ]);
 
+  /**
+   * Adds a product to the cart. If the product is already in the cart,
+   * its quantity is incremented.
+   * @param {Product} product - The product to add.
+   */
   function addToCart(product: Product) {
     if (!product.inStock) {
       return;

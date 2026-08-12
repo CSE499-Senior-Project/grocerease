@@ -2,12 +2,19 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 
+/**
+ * Renders a "Sign in with Google" button.
+ * This client component handles the Google OAuth sign-in flow using Supabase.
+ * When clicked, it initiates the authentication process and redirects the user
+ * to a callback URL upon successful authentication.
+ */
 export default function SignInButton() {
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
   );
 
+  // Initiates the Google OAuth sign-in process with a redirect.
   const handleGoogleSignIn = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",

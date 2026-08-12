@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ArrowRightStartOnRectangleIcon,
-  KeyIcon,
-  MapPinIcon,
   QueueListIcon,
   Square2StackIcon,
 } from '@heroicons/react/24/outline';
@@ -13,9 +11,7 @@ import SignOutButton from '@/components/SignOutButton';
 
 const navItems = [
   { href: '/merchant/orders', label: 'Orders Queue', icon: QueueListIcon },
-  { href: '/merchant/products', label: 'Products', icon: Square2StackIcon },
-  // { href: '/merchant/password', label: 'Password', icon: KeyIcon }, // change to something
-  { href: '/merchant/address', label: 'Store Address', icon: MapPinIcon },
+  { href: '/merchant/product-catalog', label: 'Product Catalog', icon: Square2StackIcon },
 ];
 
 export default function MerchantSidebar({
@@ -37,12 +33,15 @@ export default function MerchantSidebar({
       </div>
 
       <nav className='space-y-1 border-t border-slate-200 pt-4'>
+        {/* Maps over the navigation items to render the links. */}
         {navItems.map(({ href, label, icon: Icon }) => {
+          // Determines if the link is active by checking if the current URL path starts with the link's href.
           const isActive = pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
+              // Applies conditional styling for active and inactive links.
               className={`flex items-center gap-2 rounded-md border-l-4 px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
                   ? 'border-brand-primary bg-brand-light text-brand-primary'

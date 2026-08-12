@@ -10,6 +10,12 @@ interface ProductCardProps {
   product: Product;
 }
 
+/**
+ * Renders a product card for display in catalog grids.
+ * This component shows key product information like image, name, and price.
+ * It provides links to the product details page and the product's category.
+ * An "Add to Cart" button allows users to add the product directly to their cart.
+ */
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
 
@@ -56,6 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             ${product.price.toFixed(2)}
           </p>
 
+          {/* The "Add to Cart" button is disabled if the product is out of stock. */}
           <button
             type="button"
             onClick={() => addToCart(product)}

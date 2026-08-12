@@ -3,9 +3,18 @@
 import Link from "next/link";
 
 type ErrorPageProps = {
+  // The reset function allows the user to attempt to re-render the component tree
+  // that threw the error, which might resolve temporary issues.
   reset: () => void;
 };
 
+/**
+ * Renders a user-friendly error page for unhandled runtime errors.
+ * This component is a special Next.js file that acts as an error boundary.
+ * It catches errors in nested routes and provides options for the user to
+ * recover, such as trying the action again or navigating back to the home page.
+ * @param {ErrorPageProps} props - Contains a `reset` function to re-render the boundary's content.
+ */
 export default function ErrorPage({ reset }: ErrorPageProps) {
   return (
     <section className="flex w-full flex-1 items-center justify-center px-4 py-12 sm:px-6">
@@ -31,6 +40,7 @@ export default function ErrorPage({ reset }: ErrorPageProps) {
         </p>
 
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          {/* The reset button calls the provided reset function to try and recover from the error. */}
           <button
             type="button"
             onClick={reset}

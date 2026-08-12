@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+/**
+ * A constant array of United States state names and their two-letter codes.
+ * Used for populating dropdowns and for validation.
+ */
 export const US_STATES = [
   { code: "AL", name: "Alabama" },
   { code: "AK", name: "Alaska" },
@@ -54,8 +58,16 @@ export const US_STATES = [
   { code: "WY", name: "Wyoming" },
 ] as const;
 
+/**
+ * An array of just the US state codes, derived from `US_STATES`.
+ * This is used to create a Zod enum for state field validation.
+ */
 const US_STATE_CODES = US_STATES.map((state) => state.code) as [string, ...string[]];
 
+/**
+ * Zod schema for validating address form data.
+ * Ensures that all required fields are present and correctly formatted.
+ */
 export const AddressSchema = z.object({
   full_name: z.string().trim().min(1, { message: "Full name is required" }).max(100),
   address_1: z.string().trim().min(1, { message: "Address is required" }).max(200),
@@ -66,8 +78,15 @@ export const AddressSchema = z.object({
   is_default: z.boolean(),
 });
 
+/**
+ * The TypeScript type for data submitted through the address form.
+ * Inferred from the `AddressSchema`.
+ */
 export type AddressData = z.infer<typeof AddressSchema>;
 
+/**
+ * The TypeScript type representing a complete address record from the database.
+ */
 export type Address = {
   id: string;
   user_id: string;
