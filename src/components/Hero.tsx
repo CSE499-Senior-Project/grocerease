@@ -3,6 +3,12 @@ import Link from "next/link";
 
 import { getHeroCategories } from "@/lib/products";
 
+/**
+ * Renders the main hero section for the homepage.
+ * This server component includes a prominent call-to-action and fetches a few
+ * category images via `getHeroCategories` to create a dynamic and visually
+ * appealing introduction to the site.
+ */
 export default async function Hero() {
   const categories = await getHeroCategories();
 
@@ -64,6 +70,7 @@ export default async function Hero() {
           <div className="relative rounded-3xl border border-green-100 bg-white p-8 shadow-xl">
             <div className="rounded-2xl bg-brand-light p-8">
               <div className="grid grid-cols-2 gap-4">
+                {/* Displays a grid of category images fetched from the server. */}
                 {categories.map((category) => (
                   <Link
                     key={category.category}

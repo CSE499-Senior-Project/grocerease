@@ -2,6 +2,10 @@ import { UseFormRegister, FieldError, FieldValues, Path } from "react-hook-form"
 import { type ElementType } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
+/**
+ * Props for the generic FormInput component.
+ * It is designed to be highly reusable and integrate seamlessly with react-hook-form.
+ */
 interface FormInputProps<T extends FieldValues> {
   label: string;
   name: Path<T>;
@@ -17,6 +21,12 @@ interface FormInputProps<T extends FieldValues> {
   step?: number;
 }
 
+/**
+ * A generic and reusable form input component.
+ * It integrates with `react-hook-form` for registration and error handling.
+ * It supports custom icons and can be adapted for various input types,
+ * making it a versatile building block for forms across the application.
+ */
 export default function FormInput<T extends FieldValues>({
   label,
   name,
@@ -54,6 +64,7 @@ export default function FormInput<T extends FieldValues>({
           aria-invalid={!!error}
           className='peer block w-full rounded-md border border-brand-primary py-[9px] pl-10 pr-10 text-sm placeholder:text-green-700 focus:outline-brand-primary bg-surface-bg focus:text-txt-primary' 
         />
+        {/* Renders the primary icon on the left side of the input. */}
         {Icon && (
           <Icon className='pointer-events-none absolute left-3 top-1/2 h-[18px] -translate-y-1/2 text-green-800 peer-focus:text-green-400' />
         )}
@@ -62,12 +73,14 @@ export default function FormInput<T extends FieldValues>({
           onClick={onIcon2Click}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-green-800 hover:text-green-400 focus:outline-none cursor-pointer"
         >
+          {/* Renders an optional second icon on the right, typically for actions like toggling password visibility. */}
           {Icon2 && (
             <Icon2 className="h-5 w-5" />
           )}
         </button>
       </div>
 
+      {/* Displays validation errors for the input field. */}
       {error && (
         <div className="mt-1 flex items-center gap-1">
           <ExclamationCircleIcon className='pointer-events-none h-[18px] text-red-700' />

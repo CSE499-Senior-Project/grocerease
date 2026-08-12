@@ -2,6 +2,12 @@ import { cache } from "react";
 import type { MerchantProduct } from "@/types/merchant-products";
 import { createClient } from "@/utils/supabase/server";
 
+/**
+ * Fetches all products for the merchant view, including their associated category data.
+ * This function is wrapped in `cache` to memoize the result on a per-request basis,
+ * preventing redundant database calls if this function is invoked multiple times
+ * during a single server render.
+ */
 export const getProducts = cache(async (): Promise<MerchantProduct[]> => {
   const supabase = await createClient();
 

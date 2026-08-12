@@ -1,3 +1,7 @@
+/**
+ * A static data array defining the key benefits of the GrocerEase service.
+ * This data is used to populate the "Benefits" section on the homepage.
+ */
 export const benefits = [
   {
     id: 1,

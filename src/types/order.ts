@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+/**
+ * Zod schema for validating checkout data before creating an order.
+ * It ensures all financial details, delivery information, and items are correctly formatted.
+ */
 export const CheckoutSchema = z.object({
   user_id: z.uuid({ message: "Invalid user ID." }).optional(),
   subtotal: z.number().min(0, { message: "Subtotal cannot be negative." }),
@@ -15,7 +19,9 @@ export const CheckoutSchema = z.object({
   }))
 });
 
-
+/**
+ * The base TypeScript type for an order, representing its structure in the database.
+ */
 export type Order = {
   id: string;
   user_id: string;
@@ -30,6 +36,9 @@ export type Order = {
   updated_at: string;
 };
 
+/**
+ * The TypeScript type for a single item within an order.
+ */
 export type OrderItem = {
   id: string;
   order_id: string;
@@ -38,6 +47,10 @@ export type OrderItem = {
   price_at_time: number;
 };
 
+/**
+ * The TypeScript type for an order item that includes nested product details.
+ * This is used when displaying order contents to the user.
+ */
 export type OrderItemWithProduct = {
   id: string;
   quantity: number;
@@ -50,6 +63,9 @@ export type OrderItemWithProduct = {
   } | null;
 };
 
+/**
+ * The TypeScript type for the customer's profile information associated with an order.
+ */
 export type OrderProfile = {
   id: string;
   email: string;
@@ -58,13 +74,25 @@ export type OrderProfile = {
   phone_number: string | null;
 };
 
+/**
+ * The TypeScript type for an order as viewed by a merchant.
+ * It includes the customer's profile and detailed order items.
+ */
 export type MerchantOrder = Order & {
   profiles: OrderProfile | null;
   order_items: OrderItemWithProduct[];
 };
 
+/**
+ * The TypeScript type for an order as viewed by a customer.
+ * It includes detailed order items but not the full customer profile (as it's implicit).
+ */
 export type CustomerOrder = Order & {
   order_items: OrderItemWithProduct[];
 };
 
+/**
+ * The TypeScript type for data submitted during the checkout process.
+ * Inferred from the `CheckoutSchema`.
+ */
 export type CheckoutData = z.infer<typeof CheckoutSchema>;

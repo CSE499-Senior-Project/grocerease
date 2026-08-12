@@ -30,6 +30,12 @@ export default function SignUpForm() {
     resolver: zodResolver(SignUpSchema),
   });
 
+  /**
+   * Handles the form submission for user registration.
+   * This function calls the `signupUser` server action with the form data.
+   * If the server action returns an error (e.g., validation failure, user already exists),
+   * it updates the form's error state to display the message to the user.
+   */
   const onSubmit = async (data: SignUpData) => {
     const response = await signupUser(data);
 
@@ -100,6 +106,7 @@ export default function SignUpForm() {
               autoComplete='current-password'
               icon={KeyIcon}
               icon2={showPassword ? EyeSlashIcon : EyeIcon}
+              // Toggles the visibility of the password field.
               onIcon2Click={() => setShowPassword(!showPassword)}
             />
             <FormInput
@@ -112,6 +119,7 @@ export default function SignUpForm() {
               autoComplete='current-password'
               icon={KeyIcon}
               icon2={showConfirmPassword ? EyeSlashIcon : EyeIcon}
+              // Toggles the visibility of the confirm password field.
               onIcon2Click={() => setShowConfirmPassword(!showConfirmPassword)}
             />
             <input type='hidden' name='redirectTo' />

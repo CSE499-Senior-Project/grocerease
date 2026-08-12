@@ -8,6 +8,13 @@ import { useCart } from "@/context/CartContext";
 import Logo from "@/components/layout/Logo";
 import { createClient } from "@/utils/supabase/client";
 
+/**
+ * Renders the main application header.
+ * This client component manages the user's authentication state in real-time by subscribing
+ * to Supabase's `onAuthStateChange`. It displays navigation links, the user's account menu
+ * (if signed in), and a link to the shopping cart with an item count.
+ * The account menu's visibility is controlled by local component state.
+ */
 export default function AppHeader({
   initialIsSignedIn,
   firstName,
@@ -18,6 +25,10 @@ export default function AppHeader({
   const [isSignedIn, setIsSignedIn] = useState(initialIsSignedIn);
   const supabase = createClient();
 
+  /**
+   * Subscribes to Supabase's authentication state changes.
+   * This effect ensures the header UI updates in real-time when a user signs in or out on any tab.
+   */
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsSignedIn(!!session);
@@ -31,6 +42,10 @@ export default function AppHeader({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * Handles closing the user account menu when a click occurs outside of it
+   * or when the 'Escape' key is pressed. This improves accessibility and user experience.
+   */
   useEffect(() => {
     if (!isMenuOpen) {
       return;

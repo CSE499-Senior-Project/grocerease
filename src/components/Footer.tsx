@@ -18,6 +18,11 @@ const footerLinks = {
   ],
 };
 
+/**
+ * Renders the main footer for the application.
+ * It includes organized links for shopping, company information, and support,
+ * as well as a brief description of the service and copyright information.
+ */
 export default function Footer() {
   return (
     <footer className="border-t border-slate-200 bg-white">

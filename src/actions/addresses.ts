@@ -6,18 +6,30 @@ import { createClient } from "@/utils/supabase/server";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
-// Postgres unique_violation. Can surface here if two requests race to become
-// the default address at the same time; the partial unique index is the
-// real backstop, this just turns the raw DB error into something readable.
+/**
+ * Postgres error code for a unique violation.
+ * This can occur if two requests race to set a default address simultaneously.
+ * The partial unique index in the database is the ultimate safeguard.
+ */
 const UNIQUE_VIOLATION = '23505';
 
+/**
+ * Converts a raw Supabase/Postgres error into a more user-friendly message.
+ * @param error - The database error object.
+ * @returns A user-friendly error string.
+ */
 function friendlyAddressError(error: { code?: string; message: string }): string {
   if (error.code === UNIQUE_VIOLATION) {
     return "Something changed at the same time. Please try again.";
   }
   return error.message;
 }
-
+/**
+ * Sets the `is_default` flag to false for all other addresses of a user.
+ * @param supabase - The Supabase client instance.
+ * @param userId - The ID of the user.
+ * @param excludeId - An optional address ID to exclude from the update (e.g., the one being set as default).
+ */
 async function unsetOtherDefaults(supabase: SupabaseClient, userId: string, excludeId?: string) {
   let query = supabase
     .from('addresses')
@@ -32,6 +44,12 @@ async function unsetOtherDefaults(supabase: SupabaseClient, userId: string, excl
   await query;
 }
 
+/**
+ * Promotes the most recently created address to be the new default.
+ * @param supabase - The Supabase client instance.
+ * @param userId - The ID of the user.
+ * @param excludeId - An optional address ID to exclude from consideration (e.g., one that was just deleted).
+ */
 async function promoteNextDefault(supabase: SupabaseClient, userId: string, excludeId?: string) {
   let query = supabase
     .from('addresses')
@@ -54,6 +72,11 @@ async function promoteNextDefault(supabase: SupabaseClient, userId: string, excl
   return { error };
 }
 
+/**
+ * Creates a new address for the currently signed-in user.
+ * @param data - The address data to be created.
+ * @returns An object with a `success` flag or an `error` message.
+ */
 export async function createAddress(data: AddressData) {
   const parsed = AddressSchema.safeParse(data);
   if (!parsed.success) {
@@ -68,18 +91,22 @@ export async function createAddress(data: AddressData) {
       return { error: "Not signed in." };
     }
 
+    // Check how many addresses the user already has.
     const { count } = await supabase
       .from('addresses')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', user.id);
 
+    // If this is the user's first address, it must be the default.
     const isFirstAddress = !count;
     const shouldBeDefault = isFirstAddress || parsed.data.is_default;
 
+    // If this new address is set to be the default, unset any other existing defaults.
     if (shouldBeDefault && !isFirstAddress) {
       await unsetOtherDefaults(supabase, user.id);
     }
 
+    // Insert the new address into the database.
     const { error } = await supabase.from('addresses').insert({
       user_id: user.id,
       full_name: parsed.data.full_name,
@@ -103,6 +130,12 @@ export async function createAddress(data: AddressData) {
   return { success: true };
 }
 
+/**
+ * Updates an existing address for the currently signed-in user.
+ * @param id - The ID of the address to update.
+ * @param data - The new address data.
+ * @returns An object with a `success` flag or an `error` message.
+ */
 export async function updateAddress(id: string, data: AddressData) {
   const parsed = AddressSchema.safeParse(data);
   if (!parsed.success) {
@@ -117,6 +150,7 @@ export async function updateAddress(id: string, data: AddressData) {
       return { error: "Not signed in." };
     }
 
+    // Fetch the existing address to check its current `is_default` status.
     const { data: existing } = await supabase
       .from('addresses')
       .select('is_default')
@@ -130,11 +164,13 @@ export async function updateAddress(id: string, data: AddressData) {
 
     let finalIsDefault = parsed.data.is_default;
 
+    // If the updated address is being set as the default...
     if (finalIsDefault) {
+      // ...unset the default flag on all other addresses.
       await unsetOtherDefaults(supabase, user.id, id);
     } else if (existing.is_default) {
-      // Unsetting the current default: promote another address, or keep
-      // this one default if it's the only address the user has.
+      // If we are unsetting the current default address...
+      // ...try to promote another address to be the new default.
       const { data: nextDefault } = await supabase
         .from('addresses')
         .select('id')
@@ -147,10 +183,12 @@ export async function updateAddress(id: string, data: AddressData) {
       if (nextDefault) {
         await supabase.from('addresses').update({ is_default: true }).eq('id', nextDefault.id);
       } else {
+        // If there are no other addresses, this one must remain the default.
         finalIsDefault = true;
       }
     }
 
+    // Perform the update operation.
     const { error } = await supabase
       .from('addresses')
       .update({
@@ -177,6 +215,11 @@ export async function updateAddress(id: string, data: AddressData) {
   return { success: true };
 }
 
+/**
+ * Deletes an address for the currently signed-in user.
+ * @param id - The ID of the address to delete.
+ * @returns An object with a `success` flag, an `error` message, or a `warning`.
+ */
 export async function deleteAddress(id: string) {
   try {
     const supabase = await createClient();
@@ -186,6 +229,7 @@ export async function deleteAddress(id: string) {
       return { error: "Not signed in." };
     }
 
+    // Fetch the address to see if it's the current default before deleting.
     const { data: existing } = await supabase
       .from('addresses')
       .select('is_default')
@@ -197,6 +241,7 @@ export async function deleteAddress(id: string) {
       return { error: "Address not found." };
     }
 
+    // Delete the address.
     const { error } = await supabase
       .from('addresses')
       .delete()
@@ -207,6 +252,7 @@ export async function deleteAddress(id: string) {
       return { error: error.message };
     }
 
+    // If the deleted address was the default, promote another one.
     if (existing.is_default) {
       const { error: promoteError } = await promoteNextDefault(supabase, user.id, id);
       if (promoteError) {

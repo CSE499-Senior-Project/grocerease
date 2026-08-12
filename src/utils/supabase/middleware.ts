@@ -4,6 +4,12 @@ import { type NextRequest, NextResponse } from "next/server";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
+/**
+ * Updates the user's session in a Next.js middleware context.
+ * This function creates a Supabase client configured to read from the incoming request's cookies
+ * and write to a new response's cookies. This is crucial for refreshing the user's auth token
+ * on every request, keeping their session alive.
+ */
 export async function updateSession(request: NextRequest) {
   // Create an unmodified response
   let supabaseResponse = NextResponse.next({

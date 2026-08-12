@@ -6,11 +6,22 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+/**
+ * Defines the props for the ProductTable component.
+ */
 interface ProductTableProps {
+  // An array of product objects to be displayed in the table.
   products: MerchantProduct[];
 }
 
+/**
+ * A client component that renders a table of merchant products.
+ * It also displays a success banner if a product has just been added or edited,
+ * based on URL query parameters.
+ * @param {ProductTableProps} props - The component props.
+ */
 export default function ProductTable({ products }: ProductTableProps) {
+  // useSearchParams is a Client Component hook that lets you read the current URL's query string.
   const searchParams = useSearchParams();
   const isProductNew = searchParams.get('product-added') === 'true';
   const isProductEdited = searchParams.get('product-edited') === 'true';
@@ -19,6 +30,7 @@ export default function ProductTable({ products }: ProductTableProps) {
 
   return (
     <>
+      {/* Conditionally render a success banner after a product is added or edited. */}
       {showSuccessBanner && (
         <div className='mb-6 rounded-md bg-green-50 p-4 border border-green-200'>
           <p className='text-sm font-medium text-green-800'>
@@ -41,6 +53,7 @@ export default function ProductTable({ products }: ProductTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 bg-white">
+            {/* Map over the products array to create a table row for each product. */}
             {products.map((product) => (
               <tr
                 key={product.id}
@@ -89,6 +102,7 @@ export default function ProductTable({ products }: ProductTableProps) {
                   </span>
                 </td>
                 <td className="px-4 py-4 lg:px-6">
+                  {/* Action button to navigate to the edit page for this specific product. */}
                   <Link
                     href={`/merchant/product-catalog/${product.id}/edit`}
                     aria-label={`Edit ${product.name}`}

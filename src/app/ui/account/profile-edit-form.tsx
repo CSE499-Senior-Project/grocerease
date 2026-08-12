@@ -10,7 +10,19 @@ import { updateProfile } from '@/actions/actions';
 import AccountCard from '@/app/ui/account/account-card';
 import PageTitle from '@/app/ui/account/page-title';
 
-export default function ProfileEditForm({ profile }: { profile: Profile }) {
+/**
+ * Defines the props for the ProfileEditForm component.
+ */
+interface ProfileEditFormProps {
+  // The user's current profile data to pre-fill the form.
+  profile: Profile;
+}
+
+/**
+ * A client component that renders a form for editing user profile information.
+ * @param {ProfileEditFormProps} props - The component props.
+ */
+export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const router = useRouter();
 
   const {
@@ -19,6 +31,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
     setError,
     formState: { errors, isSubmitting },
   } = useForm<ProfileUpdateData>({
+    // Use Zod for schema-based validation.
     resolver: zodResolver(ProfileUpdateSchema),
     defaultValues: {
       first_name: profile.first_name,
@@ -28,9 +41,14 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
     },
   });
 
+  /**
+   * Handles the form submission by calling the `updateProfile` server action.
+   * @param {ProfileUpdateData} data - The validated form data.
+   */
   const onSubmit = async (data: ProfileUpdateData) => {
     const response = await updateProfile(data);
 
+    // If the server action returns an error, display it at the top of the form.
     if (response?.error) {
       setError('root', {
         message: response.error,
@@ -38,6 +56,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
       return;
     }
 
+    // On success, redirect the user back to their profile view.
     router.push('/account/profile');
   };
 
@@ -46,6 +65,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
       <PageTitle>Edit Account Details</PageTitle>
 
       <AccountCard className='p-4 md:p-6'>
+        {/* Display a global error message if the server action fails. */}
         {errors.root && (
           <div className='mb-6 rounded-md border border-red-200 bg-red-50 p-4'>
             <p className='text-sm font-medium text-red-800'>{errors.root.message}</p>
@@ -53,6 +73,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
+          {/* Reusable input components for each form field. */}
           <FormInput
             label='First Name'
             name='first_name'
@@ -85,6 +106,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
             uppercase={false}
           />
 
+          {/* A standard select input for the preferred contact method. */}
           <div>
             <label
               className='mb-3 mt-5 block font-bold text-txt-primary'
@@ -108,6 +130,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
             )}
           </div>
 
+          {/* Form action buttons. */}
           <div className='mt-6 flex gap-3'>
             <button
               type='button'

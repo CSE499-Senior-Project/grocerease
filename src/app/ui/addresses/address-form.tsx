@@ -1,6 +1,12 @@
 'use client';
 
-import { BuildingOffice2Icon, HashtagIcon, HomeIcon, MapPinIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import {
+  BuildingOffice2Icon,
+  HashtagIcon,
+  HomeIcon,
+  MapPinIcon,
+  UserCircleIcon,
+} from '@heroicons/react/24/outline';
 import FormInput from '@/components/FormInput';
 import { useForm } from 'react-hook-form';
 import { AddressSchema, US_STATES, type AddressData } from '@/types/address';
@@ -8,13 +14,28 @@ import type { Address } from '@/types/address';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createAddress, updateAddress } from '@/actions/addresses';
 
+/**
+ * Defines the props for the AddressForm component.
+ */
 interface AddressFormProps {
+  // The existing address to edit. If not provided, the form is in "create" mode.
   address?: Address;
-  onSuccess?: () => void;
-  onCancel?: () => void;
+  // Callback function to execute on successful form submission.
+  onSuccess: () => void;
+  // Callback function to execute when the form is canceled.
+  onCancel: () => void;
 }
 
-export default function AddressForm({ address, onSuccess, onCancel }: AddressFormProps) {
+/**
+ * A reusable form for creating or editing a user address.
+ * It handles form state, validation, and submission to server actions.
+ * @param {AddressFormProps} props - The component props.
+ */
+export default function AddressForm({
+  address,
+  onSuccess,
+  onCancel,
+}: AddressFormProps) {
   const isEditing = !!address;
 
   const {
@@ -23,6 +44,7 @@ export default function AddressForm({ address, onSuccess, onCancel }: AddressFor
     setError,
     formState: { errors, isSubmitting },
   } = useForm<AddressData>({
+    // Use Zod for schema-based validation.
     resolver: zodResolver(AddressSchema),
     defaultValues: {
       full_name: address?.full_name ?? '',
@@ -35,26 +57,34 @@ export default function AddressForm({ address, onSuccess, onCancel }: AddressFor
     },
   });
 
+  /**
+   * Handles form submission by calling the appropriate server action (create or update).
+   * @param {AddressData} data - The validated form data.
+   */
   const onSubmit = async (data: AddressData) => {
+    // Conditionally call the update or create action based on whether we are editing.
     const response = isEditing
-      ? await updateAddress(address.id, data)
+      ? await updateAddress(address!.id, data)
       : await createAddress(data);
 
+    // If the server action returns an error, display it at the top of the form.
     if (response?.error) {
       setError('root', {
         message: response.error,
       });
       return;
     }
-
-    if (onSuccess) onSuccess();
+    // On success, call the provided onSuccess callback.
+    onSuccess();
   };
 
   return (
     <>
       {errors.root && (
         <div className='mb-6 rounded-md border border-red-200 bg-red-50 p-4'>
-          <p className='text-sm font-medium text-red-800'>{errors.root.message}</p>
+          <p className='text-sm font-medium text-red-800'>
+            {errors.root.message}
+          </p>
         </div>
       )}
       <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
@@ -113,9 +143,13 @@ export default function AddressForm({ address, onSuccess, onCancel }: AddressFor
             aria-invalid={!!errors.state}
             className='block w-full rounded-md border border-brand-primary py-[9px] px-3 text-sm bg-surface-bg text-txt-primary focus:outline-brand-primary'
           >
-            <option value='' disabled>Select a state</option>
+            <option value='' disabled>
+              Select a state
+            </option>
             {US_STATES.map((state) => (
-              <option key={state.code} value={state.code}>{state.name}</option>
+              <option key={state.code} value={state.code}>
+                {state.name}
+              </option>
             ))}
           </select>
           {errors.state && (
@@ -146,15 +180,13 @@ export default function AddressForm({ address, onSuccess, onCancel }: AddressFor
         </label>
 
         <div className='mt-6 flex gap-3'>
-          {onCancel && (
-            <button
-              type='button'
-              onClick={onCancel}
-              className='w-full rounded-md border border-slate-300 py-[9px] font-bold text-slate-700 hover:bg-slate-100 cursor-pointer'
-            >
-              Cancel
-            </button>
-          )}
+          <button
+            type='button'
+            onClick={onCancel}
+            className='w-full rounded-md border border-slate-300 py-[9px] font-bold text-slate-700 hover:bg-slate-100 cursor-pointer'
+          >
+            Cancel
+          </button>
           <button
             type='submit'
             disabled={isSubmitting}
@@ -163,9 +195,25 @@ export default function AddressForm({ address, onSuccess, onCancel }: AddressFor
             {isSubmitting ? (
               <>
                 Saving...
-                <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className='h-5 w-5 animate-spin'
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                >
+                  <circle
+                    className='opacity-25'
+                    cx='12'
+                    cy='12'
+                    r='10'
+                    stroke='currentColor'
+                    strokeWidth='4'
+                  ></circle>
+                  <path
+                    className='opacity-75'
+                    fill='currentColor'
+                    d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                  ></path>
                 </svg>
               </>
             ) : (
