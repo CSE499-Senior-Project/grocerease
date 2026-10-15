@@ -22,7 +22,8 @@ function friendlyAddressError(error: { code?: string; message: string }): string
   if (error.code === UNIQUE_VIOLATION) {
     return "Something changed at the same time. Please try again.";
   }
-  return error.message;
+  console.error("address action failed:", error);
+  return "We couldn't save your address. Please try again.";
 }
 /**
  * Sets the `is_default` flag to false for all other addresses of a user.
@@ -249,7 +250,8 @@ export async function deleteAddress(id: string) {
       .eq('user_id', user.id);
 
     if (error) {
-      return { error: error.message };
+      console.error("address delete failed:", error);
+      return { error: "We couldn't delete the address. Please try again." };
     }
 
     // If the deleted address was the default, promote another one.
