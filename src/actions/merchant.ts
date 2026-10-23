@@ -29,7 +29,8 @@ export async function updateOrderStatus(orderId: string, status: string) {
       .eq("id", orderId);
 
     if (error) {
-      return { error: error.message };
+      console.error("order status update failed:", error);
+      return { error: "We couldn't update the order status. Please try again." };
     }
   } catch (error) {
     return { error: "An unexpected error occurred while updating the order." };
