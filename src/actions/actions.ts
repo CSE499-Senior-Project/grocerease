@@ -19,6 +19,12 @@ import { createClient } from "@/utils/supabase/server";
 import { CheckoutData, CheckoutSchema } from "@/types/order";
 
 /**
+ * Custom SQLSTATE raised by the `place_order` database function for expected,
+ * customer-facing failures (e.g. out of stock). Any other error code is internal.
+ */
+const PLACE_ORDER_USER_ERROR = 'GR001';
+
+/**
  * Signs up a new user.
  * @param data - The user's sign-up information (first name, last name, email, password).
  * @returns An object with an `error` message on failure. Redirects on success.
@@ -117,7 +123,8 @@ export async function updateProfile(data: ProfileUpdateData) {
       .eq('id', user.id);
 
     if (error) {
-      return { error: error.message };
+      console.error("profile update failed:", error);
+      return { error: "We couldn't update your profile. Please try again." };
     }
   }
   catch (error) {
@@ -194,7 +201,8 @@ export async function addProduct(data: ProductData) {
       });
 
     if (error) {
-      return { error: error.message };
+      console.error("product insert failed:", error);
+      return { error: "We couldn't add the product. Please try again." };
     }
 
   } catch (error) {
@@ -238,7 +246,8 @@ export async function editProduct(data: EditProductData) {
       .eq('id', parsed.data.id);
 
     if (error) {
-      return { error: error.message };
+      console.error("product update failed:", error);
+      return { error: "We couldn't update the product. Please try again." };
     }
 
     revalidatePath('/merchant/product-catalog');
@@ -276,40 +285,27 @@ export async function placeOrder(data: CheckoutData) {
       return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
     }
 
-    // Insert the main order record.
-    const { data: newOrder, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        user_id: parsed.data.user_id,
-        subtotal: parsed.data.subtotal,
-        service_fee: parsed.data.service_fee,
-        tax_amount: parsed.data.tax_amount,
-        total_amount: parsed.data.total_amount,
-        delivery_time_slot: parsed.data.delivery_time_slot,
-        delivery_address: parsed.data.delivery_address
-      })
-      .select('id')
-      .single();
+    // Create the order, its items, and decrement stock in a single transaction.
+    const { error: orderError } = await supabase.rpc('place_order', {
+      p_subtotal: parsed.data.subtotal,
+      p_service_fee: parsed.data.service_fee,
+      p_tax_amount: parsed.data.tax_amount,
+      p_total_amount: parsed.data.total_amount,
+      p_delivery_time_slot: parsed.data.delivery_time_slot,
+      p_delivery_address: parsed.data.delivery_address,
+      p_items: parsed.data.items.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity
+      }))
+    });
 
-    if (orderError || !newOrder) {
-      return { error: orderError?.message || "Failed to create order." };
-    }
-
-    // Prepare the individual order items for insertion.
-    const orderItems = parsed.data.items.map((item) => ({
-      order_id: newOrder.id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      price_at_time: item.price_at_time
-    }));
-
-    // Insert all order items.
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
-    
-    if (itemsError) {
-      return { error: itemsError.message };
+    if (orderError) {
+      // Only expected checkout failures (raised with GR001) are safe to show to the customer.
+      if (orderError.code === PLACE_ORDER_USER_ERROR) {
+        return { error: orderError.message };
+      }
+      console.error("place_order failed:", orderError);
+      return { error: "We couldn't place your order. Please try again." };
     }
 
   } catch (error) {
@@ -318,6 +314,8 @@ export async function placeOrder(data: CheckoutData) {
 
   revalidatePath('/merchant/orders');
   revalidatePath('/account/orders');
+  revalidatePath('/merchant/product-catalog');
+  revalidatePath('/', 'layout');
 
   return { success: true };
 }
